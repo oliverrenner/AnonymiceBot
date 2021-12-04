@@ -1,0 +1,11 @@
+const DISCORD_BOT_TOKEN = 'xxxxx';
+const VERIFICATION_COMMAND = '!join';
+const VERICICATION_BASE_URL = 'http://localhost:8080/verification-page';
+const VERIFICATION_TIMEOUT_MINUTES = 30;
+
+module.exports = {
+    DISCORD_BOT_TOKEN,
+    VERIFICATION_COMMAND,
+    VERICICATION_BASE_URL,
+    VERIFICATION_TIMEOUT_MINUTES
+}

@@ -1,0 +1,28 @@
+{
+  "name": "AnonymiceDiscordBot",
+  "version": "1.0.0",
+  "description": "This bot verifies token ownership information and assigns relevant roles.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oliverrenner/AnonymiceDiscordBot.git"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "discord.js": "^13.3.1",
+    "express": "^4.17.0",
+    "helmet": "^3.21.2",
+    "simple-statistics": "^7.7.0",
+    "uuid": "^8.3.2"
+  },
+  "author": "Oliver Renner",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/oliverrenner/AnonymiceDiscordBot/issues"
+  },
+  "homepage": "https://github.com/oliverrenner/AnonymiceDiscordBot#readme"
+}
