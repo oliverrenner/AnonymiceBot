@@ -1,10 +1,8 @@
 const express = require('express');
-const session = require('express-session');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 const helmet = require('helmet');
-const generateNonce = require('./signature_provider');
 const Discord = require('discord.js');
 const {Intents} = require("discord.js");
 const {
@@ -63,7 +61,6 @@ const app = express();
 
 app.use([
     express.json(),
-    session({secret: SESSION_SECRET, cookie: {maxAge: 60000}}),
     cors(),
     helmet(),
     bodyParser.json(),
@@ -80,12 +77,6 @@ app.get('/status', [(req, res) => {
 app.get('/verification-page', function (request, response) {
     //todo: generateNonce here and insert in response directly
     response.sendFile('verification-page.html', {root: '.'});
-});
-
-// generate nonce for client
-app.get('/api/nonce', async (req, res) => {
-    req.session.nonce = generateNonce();
-    req.session.save(() => res.status(200).send(req.session.nonce).end());
 });
 
 // add or remove role from user
@@ -124,6 +115,7 @@ const manageRolesOfUser = (guild, discordUser, address) => {
 app.post('/api/sign_in', async (req, res) => {
     try {
         const message = req.body;
+
         if (!message) {
             // no message no verification
             res.status(422).json({message: "Expected signMessage object as body."}).end();
@@ -131,7 +123,7 @@ app.post('/api/sign_in', async (req, res) => {
         }
 
         // grab original verification request from cache
-        const verificationRequest = outstandingVerifications.find(r => r.requestId === message.requestId);
+        const verificationRequest = outstandingVerifications.find(r => r.requestId === message.nonce);
 
         if (verificationRequest) {
 

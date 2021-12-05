@@ -11,7 +11,6 @@ $(() => {
 
 /* --------------------------------------------------------- */
 /* constants */
-const apiUrlNonce = "/api/nonce";
 const apiUrlSignIn = "/api/sign_in";
 /* --------------------------------------------------------- */
 
@@ -37,7 +36,6 @@ const init = async () => {
   window.provider = new ethers.providers.Web3Provider(window.ethereum, "any");
   window.signer = provider.getSigner();
   await provider.send("eth_requestAccounts", []);
-  window.nonce = await fetch(apiUrlNonce).then((res) => res.text());
   window.account = await signer.getAddress();
   window.ens = await getDisplayableAddress(account);
   $("#walletAddressValue").text(ens || account);
@@ -62,9 +60,8 @@ const generateMessage = async () => {
         uri: document.location.origin,
         version: '1',
         statement: 'Anonymice Discord Bot',
-        requestId: urlParams.get('requestId'),
         type: 'Personal signature',
-        nonce: window.nonce
+        nonce: urlParams.get('requestId')
     }
 
     return message;

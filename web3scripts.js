@@ -3,23 +3,24 @@ const {sign} = require("simple-statistics");
 const verifySignature = (message) => {
     // TODO: verify the signature through infura!
 
-    // const infuraProvider = new providers.JsonRpcProvider(
-    //   {
-    //     allowGzip: true,
-    //     url: `${getInfuraUrl(
-    //       message.chainId
-    //     )}/8fcacee838e04f31b6ec145eb98879c8`,
-    //     headers: {
-    //       Accept: "*/*",
-    //       Origin: `http://localhost:${PORT}`,
-    //       "Accept-Encoding": "gzip, deflate, br",
-    //       "Content-Type": "application/json",
-    //     },
-    //   },
-    //   Number.parseInt(message.chainId)
-    // );
+    const infuraProvider = new providers.JsonRpcProvider(
+      {
+        allowGzip: true,
+        url: `${getInfuraUrl(
+          message.chainId
+        )}/8fcacee838e04f31b6ec145eb98879c8`,
+        headers: {
+          Accept: "*/*",
+          Origin: `http://localhost:${PORT}`,
+          "Accept-Encoding": "gzip, deflate, br",
+          "Content-Type": "application/json",
+        },
+      },
+      Number.parseInt(message.chainId)
+    );
 
-    // await infuraProvider.ready;
+    //await infuraProvider.ready;
+    
     //todo: verify signature server side
     //const fields = await message.validate(infuraProvider);
 
