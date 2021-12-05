@@ -1,4 +1,4 @@
-const DISCORD_BOT_TOKEN = 'OTE2Nzk3NDM4NDcwMjYyODI2.YavYJg.mrwU7KrB_h4Ka1fn5XPs5OLjHiE';
+const DISCORD_BOT_TOKEN = '';
 const VERIFICATION_COMMAND = '!join';
 const VERIFICATION_HOST = 'http://localhost'
 const VERIFICATION_PORT = '3010'
