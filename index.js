@@ -102,7 +102,7 @@ const assignOrRevokeRole = (assign, role, discordUser) => {
 }
 
 // fetch all relevant on-chain information and deduce required roles for user
-const manageRolesOfUser = (guild, discordUser, address, verificationRequest) => {
+const manageRolesOfUser = (guild, discordUser, address) => {
     // roles
     const babyMiceRole = guild.roles.cache.find((r) => r.name === "Baby Mice");
     const adultMiceRole = guild.roles.cache.find((r) => r.name === "Mice");
@@ -150,7 +150,7 @@ app.post('/api/sign_in', async (req, res) => {
             const discordUser = guild.members.cache.get(verificationRequest.userId);
 
             // add or revoke roles of user
-            manageRolesOfUser(guild, discordUser, message, verificationRequest);
+            manageRolesOfUser(guild, discordUser, message);
 
             // remove completed verification request from cache
             outstandingVerifications = outstandingVerifications.filter(r => r.userId !== verificationRequest.userId);
