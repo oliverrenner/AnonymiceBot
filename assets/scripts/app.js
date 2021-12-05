@@ -52,6 +52,9 @@ const init = async () => {
 
 const generateMessage = async () => {
 
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+
     let message = {
         domain: document.location.host,
         address: window.account,
@@ -59,6 +62,7 @@ const generateMessage = async () => {
         uri: document.location.origin,
         version: '1',
         statement: 'Anonymice Discord Bot',
+        requestId: urlParams.get('requestId'),
         type: 'Personal signature',
         nonce: window.nonce
     }
