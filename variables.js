@@ -1,4 +1,4 @@
-const VERIFICATION_COMMAND = '!join';
+const VERIFICATION_COMMAND = 'join';
 const VERIFICATION_HOST = 'http://localhost'
 const VERIFICATION_PORT = '3010'
 const VERICICATION_BASE_URL = `${VERIFICATION_HOST}:${VERIFICATION_PORT}/verification-page`;
