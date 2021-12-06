@@ -9,12 +9,14 @@ const contractAddress = '0xC7492fDE60f2eA4DBa3d7660e9B6F651b2841f00';
 const abi = require('./contract_abi.json');
 
 const verifySignature = async (message) => {
+    let url = `${getInfuraUrl(
+        message.chainId
+    )}/`+process.env.INFURA_KEY;
+    console.log('url', url);
     const infuraProvider = new providers.JsonRpcProvider(
         {
             allowGzip: true,
-            url: `${getInfuraUrl(
-                message.chainId
-            )}/`+INFURA_KEY,
+            url: url,
             headers: {
                 Accept: "*/*",
                 Origin: `${VERIFICATION_HOST}:${VERIFICATION_PORT}`,
