@@ -132,7 +132,7 @@ const assignOrRevokeRole = (assign, role, discordUser) => {
 };
 
 // fetch all relevant on-chain information and deduce required roles for user
-const manageRolesOfUser = (guild, discordUser, address) => {
+const manageRolesOfUser = async (guild, discordUser, message) => {
     // roles
     const babyMiceRole = guild.roles.cache.find((r) => r.name === "Baby Mice");
     const adultMiceRole = guild.roles.cache.find((r) => r.name === "Mice");
@@ -140,12 +140,12 @@ const manageRolesOfUser = (guild, discordUser, address) => {
         (r) => r.name === "Cheeth Hoarder"
     );
 
-    // tokens owned by address
-    const babyMice = getBabyMice(address);
-    const adultMice = getAdultMice(address);
-    const cheethGridingMice = getCheethGrindingMice(address);
-    const breedingMice = getBreedingMice(address);
-    const cheethAmount = getCheethHoarder(address);
+    // tokens owned by message.address
+    const babyMice = await getBabyMice(message);
+    const adultMice = await getAdultMice(message);
+    const cheethGridingMice = await getCheethGrindingMice(message);
+    const breedingMice = await getBreedingMice(message);
+    const cheethAmount = await getCheethHoarder(message);
 
     // assign or revoke roles
     assignOrRevokeRole(babyMice.length > 0, babyMiceRole, discordUser);
