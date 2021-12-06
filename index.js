@@ -25,7 +25,7 @@ const {
     getAdultMice,
     getCheethGrindingMice,
     getBreedingMice,
-    getCheethHoarder,
+    isCheethHoarder,
 } = require("./web3scripts");
 
 const {SlashCommandBuilder} = require('@discordjs/builders');
@@ -145,7 +145,7 @@ const manageRolesOfUser = async (guild, discordUser, message) => {
     const adultMice = await getAdultMice(message);
     const cheethGridingMice = await getCheethGrindingMice(message);
     const breedingMice = await getBreedingMice(message);
-    const cheethAmount = await getCheethHoarder(message);
+    const isCheethHoarder = await isCheethHoarder(message);
 
     // assign or revoke roles
     assignOrRevokeRole(babyMice.length > 0, babyMiceRole, discordUser);
@@ -156,7 +156,7 @@ const manageRolesOfUser = async (guild, discordUser, message) => {
         adultMiceRole,
         discordUser
     );
-    assignOrRevokeRole(cheethAmount > 0, cheethHoarderRole, discordUser);
+    assignOrRevokeRole(isCheethHoarder, cheethHoarderRole, discordUser);
 };
 
 app.post("/api/sign_in", async (req, res) => {

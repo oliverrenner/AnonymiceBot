@@ -1,4 +1,4 @@
-const {providers, Contract, utils} = require('ethers');
+const {providers, Contract, utils, BigNumber} = require('ethers');
 const {
     VERIFICATION_PORT,
     INFURA_KEY,
@@ -95,15 +95,15 @@ const getBreedingMice = async (message) => {
     return ['todo'];
 }
 
-const getCheethHoarder = async (message) => {
+const isCheethHoarder = async (message) => {
     console.log('get cheeth for address', message.address);
     try {
         const provider = await initProvider(message);
-        const walletContract = new Contract(babyMiceContractAddress, babyMiceAbi, provider);
+        const walletContract = new Contract(cheethContractAddress, cheethAbi, provider);
         const result = await walletContract.balanceOf(message.address);
-        return result.toNumber();
+        return !result.isZero();
     } catch (e) {
-        console.log('error getCheethHoarder', e);
+        console.log('error isCheethHoarder', e);
         return 0;
     }
 }
@@ -114,7 +114,7 @@ module.exports = {
     getBabyMice,
     getCheethGrindingMice,
     getBreedingMice,
-    getCheethHoarder
+    isCheethHoarder
 }
 
 const getInfuraUrl = (chainId) => {
