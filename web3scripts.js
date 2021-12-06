@@ -7,8 +7,10 @@ const {
 
 const miceContractAddress = '0xC7492fDE60f2eA4DBa3d7660e9B6F651b2841f00';
 const cheethContractAddress = '0x5f7BA84c7984Aa5ef329B66E313498F0aEd6d23A';
+const babyMiceContractAddress = '0x15cc16bfe6fac624247490aa29b6d632be549f00';
 const cheethAbi = require('./cheeth_abi.json');
-const miceAbi = require('./contract_abi.json');
+const miceAbi = require('./mice_abi.json');
+const babyMiceAbi = require('./baby_mice_abi.json');
 
 const initProvider = async (message) => {
     let url = `${getInfuraUrl(
@@ -62,9 +64,16 @@ const getAdultMice = async (message) => {
 }
 
 const getBabyMice = async (message) => {
-    // TODO: fetch all baby mice from contract
     console.log('get baby mice for address', message.address);
-    return ['todo'];
+    try {
+        const provider = await initProvider(message);
+        const walletContract = new Contract(babyMiceContractAddress, babyMiceAbi, provider);
+        const result = await walletContract.balanceOf(message.address);
+        return result.toNumber() > 0 ? [1] : []; // quickfix as we dont get tokenIds
+    } catch (e) {
+        console.log('error getBabyMice', e);
+        return 0;
+    }
 }
 
 const getCheethGrindingMice = async (message) => {
@@ -86,10 +95,17 @@ const getBreedingMice = async (message) => {
     return ['todo'];
 }
 
-const getCheethHoarder = async (address) => {
-    // TODO: fetch token balance for cheeth token
-    console.log('get cheeth amount for address', address);
-    return 0;
+const getCheethHoarder = async (message) => {
+    console.log('get cheeth for address', message.address);
+    try {
+        const provider = await initProvider(message);
+        const walletContract = new Contract(babyMiceContractAddress, babyMiceAbi, provider);
+        const result = await walletContract.balanceOf(message.address);
+        return result.toNumber();
+    } catch (e) {
+        console.log('error getCheethHoarder', e);
+        return 0;
+    }
 }
 
 module.exports = {
