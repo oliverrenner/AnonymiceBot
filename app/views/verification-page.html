@@ -31,12 +31,20 @@
 
     </footer>
 
-    <div class="hidden" id="error-popup">
-        <p>You must use a web3 enabled browser with MetaMask or the MetaMask mobile app to verify.<br>
-            <a href="https://metamask.io/" target="_blank" rel="noopener noreferrer">MetaMask</a></p>
+    <div class="hidden error-popup" id="web3-error-popup">
+        <p>You must use a web3 enabled browser with MetaMask or the MetaMask mobile app to verify.<br />
+            <a href="https://metamask.io/" target="_blank" rel="noopener noreferrer">MetaMask</a>
+        </p>
     </div>
 
-    
+    <div class="hidden error-popup" id="error-popup">
+        <p id="errorText"></p>
+        <button id="error-popup-button" onclick="closeErrorPopup()">OK</button>
+    </div>
+
+
+
+
 </body>
 
 

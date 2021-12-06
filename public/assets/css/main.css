@@ -14,8 +14,6 @@
   --main-text-color: #fff;
 }
 
-
-
 @font-face {
   font-family: "Pixel Font";
   src: URL("fonts/pixelfont.ttf") format("truetype");
@@ -25,7 +23,6 @@
   font-family: "Share Tech Mono", sans-serif;
   font-weight: bold;
 }
-
 
 body {
   font-family: "Pixel Font";
@@ -49,12 +46,11 @@ h4 {
   font-weight: bold;
 }
 
-
 .hidden {
   display: none;
 }
 
-#error-popup {
+.error-popup {
   background-color: var(--main-bg-color);
   z-index: 99999;
   color: var(--main-text-color);
@@ -69,15 +65,22 @@ h4 {
   padding: 5px;
   font-size: 2.7vw;
   box-shadow: 0 0 5000px 5000px rgba(0, 0, 0, 0.88);
-  padding: 0px 10px;
+  padding: 20px;
   text-align: center;
 }
 
-#error-popup p {
+.error-popup p {
   width: 100%;
-  line-height: 3vw;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  margin: 20px 0;
+}
+
+.error-popup button {
+  line-height: 3vw;
+  position: relative;
+  top: 80%;
+  width: 20%;
 }

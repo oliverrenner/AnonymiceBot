@@ -2,7 +2,7 @@
 /* document ready */
 $(() => {
   if (!hasWeb3()) {
-    $("#error-popup").show();
+    $("#web3-error-popup").show();
   } else {
     init();
   }
@@ -80,13 +80,36 @@ const signMessage = async () => {
     body: JSON.stringify(message),
     headers: { "Content-Type": "application/json" },
     credentials: "include",
-  }).then(async (res) => {
-    if (res.status === 200) {
-      res.json().then(({}) => {});
-    } else {
-      res.json().then((err) => {
-        console.error(err);
-      });
-    }
-  });
+  })
+    .then(handleFetchErrors)
+    .then(async (res) => {
+      if (res.status === 200) {
+        res.json().then(({}) => {});
+      } else {
+        res.json().then((err) => {
+          console.error(err);
+        });
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
+const handleFetchErrors = async (response) => {
+  if (!response.ok) {
+    var responseMessage = await response.json().then(data => {
+      $("#errorText").text(data.message);
+      $("#error-popup-button").show();
+      $("#error-popup").show();
+    })
+    
+  }
+  return response;
+};
+
+const closeErrorPopup = () => {
+  $("#errorText").text('');
+  $("#error-popup-button").hide();
+  $("#error-popup").hide();
 };
