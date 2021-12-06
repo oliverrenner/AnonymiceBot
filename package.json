@@ -14,8 +14,11 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "discord.js": "^13.3.1",
+    "dotenv": "^10.0.0",
+    "ethers": "^5.5.2",
     "express": "^4.17.0",
     "helmet": "^3.21.2",
+    "mongoose": "^6.0.14",
     "simple-statistics": "^7.7.0",
     "uuid": "^8.3.2"
   },

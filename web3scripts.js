@@ -1,4 +1,16 @@
 const {sign} = require("simple-statistics");
+const {providers} = require('ethers');
+const {
+    VERIFICATION_COMMAND,
+    VERIFICATION_PORT,
+    VERICICATION_BASE_URL,
+    VERIFICATION_TIMEOUT_MINUTES,
+    SESSION_SECRET,
+    VERIFICATION_HOST,
+} = require("./variables");
+
+const contractAddress = '0xC7492fDE60f2eA4DBa3d7660e9B6F651b2841f00';
+const abi = require('./contract_abi.json');
 
 const verifySignature = (message) => {
     // TODO: verify the signature through infura!
@@ -11,7 +23,7 @@ const verifySignature = (message) => {
         )}/8fcacee838e04f31b6ec145eb98879c8`,
         headers: {
           Accept: "*/*",
-          Origin: `http://localhost:${PORT}`,
+          Origin: `${VERIFICATION_HOST}:${VERIFICATION_PORT}`,
           "Accept-Encoding": "gzip, deflate, br",
           "Content-Type": "application/json",
         },
