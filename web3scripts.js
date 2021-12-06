@@ -1,44 +1,41 @@
-const {sign} = require("simple-statistics");
-const {providers} = require('ethers');
+const {providers, Contract, utils} = require('ethers');
 const {
-    VERIFICATION_COMMAND,
     VERIFICATION_PORT,
-    VERICICATION_BASE_URL,
-    VERIFICATION_TIMEOUT_MINUTES,
-    SESSION_SECRET,
+    INFURA_KEY,
     VERIFICATION_HOST,
 } = require("./variables");
 
 const contractAddress = '0xC7492fDE60f2eA4DBa3d7660e9B6F651b2841f00';
 const abi = require('./contract_abi.json');
 
-const verifySignature = (message) => {
-    // TODO: verify the signature through infura!
-
+const verifySignature = async (message) => {
     const infuraProvider = new providers.JsonRpcProvider(
-      {
-        allowGzip: true,
-        url: `${getInfuraUrl(
-          message.chainId
-        )}/8fcacee838e04f31b6ec145eb98879c8`,
-        headers: {
-          Accept: "*/*",
-          Origin: `${VERIFICATION_HOST}:${VERIFICATION_PORT}`,
-          "Accept-Encoding": "gzip, deflate, br",
-          "Content-Type": "application/json",
+        {
+            allowGzip: true,
+            url: `${getInfuraUrl(
+                message.chainId
+            )}/`+INFURA_KEY,
+            headers: {
+                Accept: "*/*",
+                Origin: `${VERIFICATION_HOST}:${VERIFICATION_PORT}`,
+                "Accept-Encoding": "gzip, deflate, br",
+                "Content-Type": "application/json",
+            },
         },
-      },
-      Number.parseInt(message.chainId)
+        Number.parseInt(message.chainId)
     );
 
-    //await infuraProvider.ready;
-    
-    //todo: verify signature server side
-    //const fields = await message.validate(infuraProvider);
+    await infuraProvider.ready;
 
-    // clear all verification requests from user
+    const result = await validate(message, infuraProvider);
+    const verifiedMessage = await result;
 
-    console.log('verifying message', message);
+    if (message.nonce !== verifiedMessage.nonce) {
+        console.log('verification failed', verifiedMessage);
+        return false;
+    }
+
+    console.log('successfully verified', verifiedMessage);
     return true;
 }
 
@@ -93,5 +90,82 @@ const getInfuraUrl = (chainId) => {
             return 'https://goerli.infura.io/v3';
         case 137:
             return 'https://polygon-mainnet.infura.io/v3';
+    }
+};
+
+const validate = async (message, provider) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let {signature, address} = message;
+            let missing = [];
+            if (!message) {
+                missing.push('`message`');
+            }
+
+            if (!signature) {
+                missing.push('`signature`');
+            }
+            if (!address) {
+                missing.push('`address`');
+            }
+            if (missing.length > 0) {
+                throw new Error(
+                    `MALFORMED_SESSION missing: ${missing.join(', ')}.`
+                );
+            }
+
+            const originalMessage = JSON.parse(JSON.stringify(message));
+            delete originalMessage.signature; // remove signature as it was not present in originally signed message
+            const addr = utils.verifyMessage(
+                JSON.stringify(originalMessage),
+                signature
+            );
+
+            if (addr.toLowerCase() !== address.toLowerCase()) {
+                try {
+                    //EIP-1271
+                    const isValidSignature =
+                        await checkContractWalletSignature(message, provider);
+                    if (!isValidSignature) {
+                        throw new Error(
+                            `INVALID_SIGNATURE: ${addr} !== ${address}`
+                        );
+                    }
+                } catch (e) {
+                    throw e;
+                }
+            }
+
+            if (
+                message.expirationTime &&
+                new Date().getTime() >=
+                new Date(message.expirationTime).getTime()
+            ) {
+                throw new Error("expired");
+            }
+            resolve(message);
+        } catch (e) {
+            reject(e);
+        }
+    });
+}
+
+const checkContractWalletSignature = async (message, provider) => {
+    if (!provider) {
+        return false;
+    }
+
+    const abi = [
+        'function isValidSignature(bytes32 _message, bytes _signature) public view returns (bool)',
+    ];
+    try {
+        const walletContract = new Contract(message.address, abi, provider);
+        const hashMessage = utils.hashMessage(JSON.stringify(message));
+        return await walletContract.isValidSignature(
+            hashMessage,
+            message.signature
+        );
+    } catch (e) {
+        throw e;
     }
 };

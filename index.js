@@ -50,7 +50,6 @@ client.once('ready', () => {
 });
 
 client.on('interactionCreate', async interaction => {
-    console.log('interaction', interaction);
     if (!interaction.isCommand()) return;
     if (interaction.commandName !== VERIFICATION_COMMAND) return;
 
@@ -180,7 +179,7 @@ app.post("/api/sign_in", async (req, res) => {
 
         if (verificationRequest) {
             // verify signature through infura node
-            const signatureVerified = verifySignature(message);
+            const signatureVerified = await verifySignature(message);
 
             console.log("signature verification result: " + signatureVerified);
 
