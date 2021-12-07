@@ -1,9 +1,5 @@
-const {providers, Contract, utils, BigNumber} = require('ethers');
-const {
-    VERIFICATION_PORT,
-    INFURA_KEY,
-    VERIFICATION_HOST,
-} = require("./variables");
+const {providers, Contract, utils} = require('ethers');
+const {VERIFICATION_HOST} = require("./variables");
 
 const miceContractAddress = '0xC7492fDE60f2eA4DBa3d7660e9B6F651b2841f00';
 const cheethContractAddress = '0x5f7BA84c7984Aa5ef329B66E313498F0aEd6d23A';
@@ -23,7 +19,7 @@ const initProvider = async (message) => {
             url: url,
             headers: {
                 Accept: "*/*",
-                Origin: `${VERIFICATION_HOST}:${VERIFICATION_PORT}`,
+                Origin: VERIFICATION_HOST,
                 "Accept-Encoding": "gzip, deflate, br",
                 "Content-Type": "application/json",
             },

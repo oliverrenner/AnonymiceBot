@@ -11,7 +11,7 @@ const VerificationRequest = require("./app/db/models/verificationRequest");
 const User = require("./app/db/models/user");
 
 const {
-  VERIFICATION_PORT,
+  APPLICATION_PORT,
   VERIFICATION_TIMEOUT_MINUTES,
 } = require("./app/variables");
 //load env vars
@@ -170,10 +170,8 @@ mongoose
     }
   )
   .then(() => {
-    app.listen(VERIFICATION_PORT, () => {
-      console.log(
-        "AnonymiceDiscordBot is running at port " + VERIFICATION_PORT
-      );
+    app.listen(APPLICATION_PORT, () => {
+      console.log("AnonymiceDiscordBot is running at port " + APPLICATION_PORT);
 
       // re-verify roles
       setInterval(async () => {
