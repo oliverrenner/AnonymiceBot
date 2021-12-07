@@ -90,9 +90,23 @@ const getCheethGrindingMice = async (message) => {
 }
 
 const getBreedingMice = async (message) => {
-    // TODO: fetch all staked mice from breeding contract
     console.log('get breeding mice for address', message.address);
-    return [];
+    try {
+        const provider = await initProvider(message);
+        const walletContract = new Contract(babyMiceContractAddress, babyMiceAbi, provider);
+        const pairs = await walletContract.getBreedingEventsLengthByAddress(message.address);
+        const result = [];
+        for (let i = 0; i < pairs.toNumber(); i++) {
+            const breedingEvent = await walletContract._addressToBreedingEvents(message.address, i);
+            result.push(breedingEvent.parentId1);
+            result.push(breedingEvent.parentId2);
+        }
+        console.log(result);
+        return result.map(r => r.toNumber());
+    } catch (e) {
+        console.log('error getBreedingMice', e);
+        return 0;
+    }
 }
 
 const getCheeth = async (message) => {
