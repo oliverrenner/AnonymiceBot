@@ -4,7 +4,7 @@ const cors = require("cors");
 const path = require("path");
 const helmet = require("helmet");
 const { verifySignature } = require("./app/web3scripts");
-const { manageRolesOfUser} = require('./app/discord/roleManager');
+const { manageRolesOfUser } = require("./app/discord/roleManager");
 
 const mongoose = require("mongoose");
 const VerificationRequest = require("./app/db/models/verificationRequest");
@@ -17,7 +17,7 @@ const {
 //load env vars
 require("dotenv").config();
 
-const DiscordClient = require("./app/discord/client")
+const DiscordClient = require("./app/discord/client");
 const client = new DiscordClient();
 client.login(process.env.DISCORD_BOT_TOKEN);
 
@@ -43,7 +43,6 @@ app.get("/verification-page", function (request, response) {
   //todo: generateNonce here and insert in response directly
   response.sendFile("./app/views/verification-page.html", { root: "." });
 });
-
 
 app.post("/api/sign_in", async (req, res) => {
   try {
@@ -88,7 +87,10 @@ app.post("/api/sign_in", async (req, res) => {
     if (isCompleted(verificationRequestRecord)) {
       return res
         .status(422)
-        .json({ message: "This verification has already been used, please create a new one!" })
+        .json({
+          message:
+            "This verification has already been used, please create a new one!",
+        })
         .end();
     }
 
@@ -119,8 +121,12 @@ app.post("/api/sign_in", async (req, res) => {
       //prefer the signing wallet address to locate an existing user account
       //fallback to the discord user Id
       //fallback to a new user
-      const existingUserByWallet = await User.findOne({ walletAddress: message.address }).exec();
-      const existingUserByDiscordUserId = await User.findOne({ userId: verificationRequestRecord.userId}).exec();
+      const existingUserByWallet = await User.findOne({
+        walletAddress: message.address,
+      }).exec();
+      const existingUserByDiscordUserId = await User.findOne({
+        userId: verificationRequestRecord.userId,
+      }).exec();
       const existingUser = existingUserByWallet || existingUserByDiscordUserId;
       const user = existingUser || new User();
       user.userId = verificationRequestRecord.userId;
@@ -170,8 +176,31 @@ mongoose
       );
 
       // re-verify roles
-      setInterval(() => {
-        // TODO: poll internal database and re-verify each user!
+      setInterval(async () => {
+        const today = new Date();
+        const yesterday = new Date().setDate(new Date().getDate() - 1);
+        const usersToReverify = await User.find({
+          lastVerified: { $lte: yesterday },
+        }).exec();
+
+        const guild = client.getGuild(process.env.DISCORD_GUILD_ID);
+
+        usersToReverify.forEach(async (user) => {
+          const discordUser = await guild.members.fetch(user.userId);
+          //if the user isnt in the discord anymore, remove them
+          if (!discordUser) {
+            await User.deleteOne({ userId: user.userId }).exec();
+          } else {
+            // add or revoke roles of user
+            const status = await manageRolesOfUser(guild, discordUser, {
+              chainId: 1, //todo: configurable?
+              address: user.walletAddress,
+            });
+            user.lastVerified = today.getTime();
+            user.status = status;
+            user.save();
+          }
+        });
       }, 24 * 60 * 60 * 1000); // daily
     });
   });
@@ -187,7 +216,6 @@ const isCompleted = (verificationRequest) => {
   return verificationRequest.completed === true;
 };
 
-
-process.on('unhandledRejection', error => {
-	console.error('Unhandled promise rejection:', error);
+process.on("unhandledRejection", (error) => {
+  console.error("Unhandled promise rejection:", error);
 });
