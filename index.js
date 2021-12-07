@@ -77,9 +77,9 @@ app.post("/api/sign_in", async (req, res) => {
         .status(422)
         .json({
           message:
-            "Invalid requestId, maybe it expired (timeout = " +
+            "Invalid request, maybe it expired (timeout = " +
             VERIFICATION_TIMEOUT_MINUTES +
-            "min)",
+            "min). Please generate a new request in Discord.",
         })
         .end();
     }
@@ -88,7 +88,7 @@ app.post("/api/sign_in", async (req, res) => {
     if (isCompleted(verificationRequestRecord)) {
       return res
         .status(422)
-        .json({ message: "The provided requestId has already been used." })
+        .json({ message: "This verification has already been used, please create a new one!" })
         .end();
     }
 
@@ -129,18 +129,13 @@ app.post("/api/sign_in", async (req, res) => {
       user.status = status;
       user.save();
 
-      // tell user its done!
-      await discordUser.send("You are verified. Cheeth!");
-
       console.info("successfully assigned roles to " + discordUser.displayName);
 
       // return something to frontend .. we're done here
       res
         .status(200)
         .json({
-          text: "brrt",
-          address: "",
-          ens: "",
+          status,
         })
         .end();
     } else {
@@ -149,9 +144,9 @@ app.post("/api/sign_in", async (req, res) => {
         .status(422)
         .json({
           message:
-            "Invalid requestId, maybe it expired (timeout = " +
+            "Invalid request, maybe it expired (timeout = " +
             VERIFICATION_TIMEOUT_MINUTES +
-            "min)",
+            "min). Please generate a new request in Discord.",
         })
         .end();
     }

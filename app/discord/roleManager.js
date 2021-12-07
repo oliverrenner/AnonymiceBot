@@ -14,8 +14,10 @@ const assignOrRevokeRole = (assign, role, discordUser) => {
   }
   if (assign) {
     discordUser.roles.add(role);
+    return role;
   } else {
     discordUser.roles.remove(role);
+    return null;
   }
 };
 
@@ -35,23 +37,25 @@ const manageRolesOfUser = async (guild, discordUser, message) => {
   const breedingMice = await getBreedingMice(message);
   const isCheethHoarder = await getCheeth(message);
 
+  const roles = [];
   // assign or revoke roles
-  assignOrRevokeRole(babyMice.length > 0, babyMiceRole, discordUser);
-  assignOrRevokeRole(
+  roles.push(assignOrRevokeRole(babyMice.length > 0, babyMiceRole, discordUser));
+  roles.push(assignOrRevokeRole(
     adultMice.length > 0 ||
       cheethGridingMice.length > 0 ||
       breedingMice.length > 0,
     adultMiceRole,
     discordUser
-  );
-  assignOrRevokeRole(isCheethHoarder, cheethHoarderRole, discordUser);
+  ));
+  roles.push(assignOrRevokeRole(isCheethHoarder, cheethHoarderRole, discordUser));
 
   return {
     babyMice: babyMice,
     adultMice: adultMice,
     cheethGridingMice: cheethGridingMice,
     breedingMice: breedingMice,
-    isCheethHoarder: isCheethHoarder
+    isCheethHoarder: isCheethHoarder,
+    roles: roles.filter(r => !!r).map(r => r.name)
   }
 };
 

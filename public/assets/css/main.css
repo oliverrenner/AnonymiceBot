@@ -34,8 +34,111 @@ header {
   text-align: center;
 }
 
+.success .success-good {
+  color: green;
+}
+
+.success .success-bad {
+  color: red;
+}
+
 article {
   padding: 20px;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#signin {
+  margin-top: 20px;
+  width: 200px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#signin .dot-bricks {
+  display: none;
+}
+
+#signin[disabled] .text, #signin:disabled .text {
+  display: none;
+}
+#signin[disabled] .dot-bricks, #signin:disabled .dot-bricks {
+  display: initial; !important;
+}
+
+#nextmeme {
+  margin: 8px 0;
+  padding: 6px 20px;
+}
+
+.meme-img {
+  max-width: 728px;
+}
+
+.meme-message {
+  text-align: center;
+}
+
+.hidden {
+  display: none;
+}
+.dot-bricks {
+  position: relative;
+  top: 8px;
+  left: -9999px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #9880ff;
+  color: #9880ff;
+  box-shadow: 9991px -16px 0 0 #9880ff, 9991px 0 0 0 #9880ff, 10007px 0 0 0 #9880ff;
+  animation: dotBricks 2s infinite ease;
+}
+
+@keyframes dotBricks {
+  0% {
+    box-shadow: 9991px -16px 0 0 #9880ff, 9991px 0 0 0 #9880ff, 10007px 0 0 0 #9880ff;
+  }
+  8.333% {
+    box-shadow: 10007px -16px 0 0 #9880ff, 9991px 0 0 0 #9880ff, 10007px 0 0 0 #9880ff;
+  }
+  16.667% {
+    box-shadow: 10007px -16px 0 0 #9880ff, 9991px -16px 0 0 #9880ff, 10007px 0 0 0 #9880ff;
+  }
+  25% {
+    box-shadow: 10007px -16px 0 0 #9880ff, 9991px -16px 0 0 #9880ff, 9991px 0 0 0 #9880ff;
+  }
+  33.333% {
+    box-shadow: 10007px 0 0 0 #9880ff, 9991px -16px 0 0 #9880ff, 9991px 0 0 0 #9880ff;
+  }
+  41.667% {
+    box-shadow: 10007px 0 0 0 #9880ff, 10007px -16px 0 0 #9880ff, 9991px 0 0 0 #9880ff;
+  }
+  50% {
+    box-shadow: 10007px 0 0 0 #9880ff, 10007px -16px 0 0 #9880ff, 9991px -16px 0 0 #9880ff;
+  }
+  58.333% {
+    box-shadow: 9991px 0 0 0 #9880ff, 10007px -16px 0 0 #9880ff, 9991px -16px 0 0 #9880ff;
+  }
+  66.666% {
+    box-shadow: 9991px 0 0 0 #9880ff, 10007px 0 0 0 #9880ff, 9991px -16px 0 0 #9880ff;
+  }
+  75% {
+    box-shadow: 9991px 0 0 0 #9880ff, 10007px 0 0 0 #9880ff, 10007px -16px 0 0 #9880ff;
+  }
+  83.333% {
+    box-shadow: 9991px -16px 0 0 #9880ff, 10007px 0 0 0 #9880ff, 10007px -16px 0 0 #9880ff;
+  }
+  91.667% {
+    box-shadow: 9991px -16px 0 0 #9880ff, 9991px 0 0 0 #9880ff, 10007px -16px 0 0 #9880ff;
+  }
+  100% {
+    box-shadow: 9991px -16px 0 0 #9880ff, 9991px 0 0 0 #9880ff, 10007px 0 0 0 #9880ff;
+  }
 }
 
 h1,

@@ -92,7 +92,7 @@ const getCheethGrindingMice = async (message) => {
 const getBreedingMice = async (message) => {
     // TODO: fetch all staked mice from breeding contract
     console.log('get breeding mice for address', message.address);
-    return ['todo'];
+    return [];
 }
 
 const getCheeth = async (message) => {
