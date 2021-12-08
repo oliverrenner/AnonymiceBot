@@ -8,7 +8,6 @@ dotenv.config({
 dotenv.config();
 
 
-
 const application = {
     name: process.env.APPLICATION_NAME,
     port: process.env.APPLICATION_SERVER_PORT,
@@ -21,7 +20,7 @@ const application = {
 }
 
 //add helper property to application.server to resolve full base url
-application.server.baseUrl = `${application.server.scheme}://${application.server.host}${application.server.port ? ':'+application.server.port : ''}${application.server.path}`
+application.server.baseUrl = `${application.server.scheme}://${application.server.host}${application.server.port ? ':' + application.server.port : ''}${application.server.path}`
 
 
 const discord = {
@@ -40,7 +39,11 @@ const mongodb = {
 }
 
 const mongoose = {
+    // temp added for prod server
     options: {
+        replicaSet: 'rs0',
+        readPreference: 'secondaryPreferred',
+        retryWrites: 'false'
     }
 }
 
