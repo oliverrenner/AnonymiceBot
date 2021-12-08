@@ -32,7 +32,7 @@ class VerificationRequestCommandHandler {
     const verificationRequest = {
       userId: interaction.user.id,
       requestId,
-      url: `${this.config.webServerBaseUrl}/${this.config.verificationPage}?requestId=${requestId}`,
+      url: `${this.config.webServerPublicUrl}/${this.config.verificationPage}?requestId=${requestId}`,
       ts: new Date().getTime(),
       completed: false,
     };

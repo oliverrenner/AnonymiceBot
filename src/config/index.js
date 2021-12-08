@@ -15,13 +15,9 @@ const application = {
         scheme: process.env.APPLICATION_SERVER_SCHEME,
         host: process.env.APPLICATION_SERVER_HOST,
         port: process.env.APPLICATION_SERVER_PORT,
-        path: process.env.APPLICATION_SERVER_PATH,
-    }
+        publicUrl: process.env.PUBLIC_URL,
+    },
 }
-
-//add helper property to application.server to resolve full base url
-application.server.baseUrl = `${application.server.scheme}://${application.server.host}${application.server.port ? ':' + application.server.port : ''}${application.server.path}`
-
 
 const discord = {
     botToken: process.env.DISCORD_BOT_TOKEN,
@@ -35,7 +31,7 @@ const discord = {
 }
 
 const mongodb = {
-    url: `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}/${process.env.MONGODB_DBNAME}?authSource=admin`
+    url: `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}/${process.env.MONGODB_DBNAME}${process.env.MONGODB_OPTIONS}`
 }
 
 const mongoose = {

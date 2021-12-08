@@ -18,7 +18,7 @@ class DiscordBot {
     });
 
     this.discordBotCommands = [new VerificationRequestCommand({
-      webServerBaseUrl: this.webServerConfig.baseUrl,
+      webServerPublicUrl: this.webServerConfig.publicUrl,
       verificationPage: this.config.commands.verification.page
     })];
 
