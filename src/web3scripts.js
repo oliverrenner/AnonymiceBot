@@ -105,26 +105,12 @@ const getBreedingMice = async (message) => {
     }
 }
 
-const getCheeth = async (message) => {
-    console.log('get cheeth for address', message.address);
-    try {
-        const provider = await initProvider(message);
-        const walletContract = new Contract(cheethContractAddress, cheethAbi, provider);
-        const result = await walletContract.balanceOf(message.address);
-        return !result.isZero();
-    } catch (e) {
-        console.log('error isCheethHoarder', e);
-        return 0;
-    }
-}
-
 module.exports = {
     verifySignature,
     getAdultMice,
     getBabyMice,
     getCheethGrindingMice,
-    getBreedingMice,
-    getCheeth
+    getBreedingMice
 }
 
 const getInfuraUrl = (chainId) => {

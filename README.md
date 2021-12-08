@@ -1,8 +1,9 @@
 # AnonymiceDiscordBot
 
-1) Type "/verify" to receive a custom verification link
-2) Sign message on website
-3) Server verifies ownership and assigns roles
+1) make sure the bots role is dragged above the roles he needs to manage (!)
+2) Type "/verify" to receive a custom verification link
+3) Sign message on website
+4) Server verifies ownership and assigns roles
 
 
 ### dev

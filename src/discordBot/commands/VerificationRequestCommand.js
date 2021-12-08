@@ -1,13 +1,11 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageActionRow, MessageButton } = require("discord.js");
 
-
 const uuid = require("uuid");
 const VerificationRequest = require("../../db/models/verificationRequest");
 
 const VERIFICATION_COMMAND = "join";
-const VERIFICATION_COMMAND_DESCRIPTION =
-  "Verify your Mice and receive channel access!";
+const VERIFICATION_COMMAND_DESCRIPTION = "Verify your Mice and receive channel access!";
 
 class VerificationRequestCommandHandler {
   constructor(config) {

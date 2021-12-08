@@ -3,8 +3,8 @@ const {
   getAdultMice,
   getCheethGrindingMice,
   getBreedingMice,
-  getCheeth,
 } = require("../web3scripts");
+const config = require("./../config");
 
 // add or remove role from user
 const assignOrRevokeRole = (assign, role, discordUser) => {
@@ -24,18 +24,14 @@ const assignOrRevokeRole = (assign, role, discordUser) => {
 // fetch all relevant on-chain information and deduce required roles for user
 const manageRolesOfUser = async (guild, discordUser, message) => {
   // roles
-  const babyMiceRole = guild.roles.cache.find((r) => r.name === "Baby Mice");
-  const adultMiceRole = guild.roles.cache.find((r) => r.name === "Mice");
-  const cheethHoarderRole = guild.roles.cache.find(
-    (r) => r.name === "Cheeth Hoarder"
-  );
+  const babyMiceRole = guild.roles.cache.find((r) => r.id === config.discord.roleIdBabyMouse);
+  const adultMiceRole = guild.roles.cache.find((r) => r.id === config.discord.roleIdGenesisMouse);
 
   // tokens owned by message.address
   const babyMice = await getBabyMice(message);
   const adultMice = await getAdultMice(message);
   const cheethGridingMice = await getCheethGrindingMice(message);
   const breedingMice = await getBreedingMice(message);
-  const isCheethHoarder = await getCheeth(message);
 
   const roles = [];
   // assign or revoke roles
@@ -47,14 +43,12 @@ const manageRolesOfUser = async (guild, discordUser, message) => {
     adultMiceRole,
     discordUser
   ));
-  roles.push(assignOrRevokeRole(isCheethHoarder, cheethHoarderRole, discordUser));
 
   return {
     babyMice: babyMice,
     adultMice: adultMice,
     cheethGridingMice: cheethGridingMice,
     breedingMice: breedingMice,
-    isCheethHoarder: isCheethHoarder,
     roles: roles.filter(r => !!r).map(r => r.name)
   }
 };

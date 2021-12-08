@@ -23,6 +23,8 @@ const discord = {
     botToken: process.env.DISCORD_BOT_TOKEN,
     clientId: process.env.DISCORD_CLIENT_ID,
     guildId: process.env.DISCORD_GUILD_ID,
+    roleIdGenesisMouse: process.env.ROLE_ID_GENESIS_MOUSE,
+    roleIdBabyMouse: process.env.ROLE_ID_BABY_MOUSE,
     commands: {
         verification: {
             page: process.env.DISCORD_COMMANDS_VERIFICATION_PAGE
