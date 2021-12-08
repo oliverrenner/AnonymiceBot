@@ -39,11 +39,7 @@ const mongodb = {
 }
 
 const mongoose = {
-    // temp added for prod server
     options: {
-        replicaSet: 'rs0',
-        readPreference: 'secondaryPreferred',
-        retryWrites: 'false'
     }
 }
 
