@@ -25,9 +25,10 @@ const assignOrRevokeRole = (assign, role, discordUser) => {
 // fetch all relevant on-chain information and deduce required roles for user
 const manageRolesOfUser = async (guild, discordUser, message) => {
   // roles
-  logger.info('discord config', discord);
+  logger.info('discord config '+  JSON.stringify(discord));
   const babyMiceRole = guild.roles.cache.find((r) => r.id === discord.roleIdBabyMouse);
   const adultMiceRole = guild.roles.cache.find((r) => r.id === discord.roleIdGenesisMouse);
+  logger.info('guild.roles.cache '+  JSON.stringify(guild.roles.cache));
 
   logger.info('babyMiceRole', babyMiceRole);
   logger.info('adultMiceRole', adultMiceRole);
