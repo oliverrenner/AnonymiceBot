@@ -5,11 +5,12 @@ const {
   getBreedingMice,
 } = require("../web3scripts");
 const {discord} = require("./../config");
+const logger = require("../utils/logger");
 
 // add or remove role from user
 const assignOrRevokeRole = (assign, role, discordUser) => {
   if (!role || !discordUser) {
-    console.log("Role or User doesen't exist.");
+    logger.info("Role or User doesen't exist.");
     return null;
   }
   if (assign) {
@@ -24,12 +25,12 @@ const assignOrRevokeRole = (assign, role, discordUser) => {
 // fetch all relevant on-chain information and deduce required roles for user
 const manageRolesOfUser = async (guild, discordUser, message) => {
   // roles
-  console.log('discord config', discord);
+  logger.info('discord config', discord);
   const babyMiceRole = guild.roles.cache.find((r) => r.id === discord.roleIdBabyMouse);
   const adultMiceRole = guild.roles.cache.find((r) => r.id === discord.roleIdGenesisMouse);
 
-  console.log('babyMiceRole', babyMiceRole);
-  console.log('adultMiceRole', adultMiceRole);
+  logger.info('babyMiceRole', babyMiceRole);
+  logger.info('adultMiceRole', adultMiceRole);
 
   // tokens owned by message.address
   const babyMice = await getBabyMice(message);

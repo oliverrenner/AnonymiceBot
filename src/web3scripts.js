@@ -7,12 +7,12 @@ const babyMiceContractAddress = '0x15cc16bfe6fac624247490aa29b6d632be549f00';
 const cheethAbi = require('./contracts/cheeth_abi.json');
 const miceAbi = require('./contracts/mice_abi.json');
 const babyMiceAbi = require('./contracts/baby_mice_abi.json');
+const logger = require("./utils/logger");
 
 const initProvider = async (message) => {
     let url = `${getInfuraUrl(
         message.chainId
     )}/` + process.env.INFURA_KEY;
-    console.log('url', url);
     const infuraProvider = new providers.JsonRpcProvider(
         {
             allowGzip: true,
@@ -38,55 +38,55 @@ const verifySignature = async (message) => {
     const verifiedMessage = await result;
 
     if (message.nonce !== verifiedMessage.nonce) {
-        console.log('verification failed', verifiedMessage);
+        logger.info('verification failed', verifiedMessage);
         return false;
     }
 
-    console.log('successfully verified', verifiedMessage);
+    logger.info('successfully verified', verifiedMessage);
     return true;
 }
 
 const getAdultMice = async (message) => {
-    console.log('get adult mice for address', message.address);
+    logger.info('get adult mice for address', message.address);
     try {
         const provider = await initProvider(message);
         const walletContract = new Contract(miceContractAddress, miceAbi, provider);
         const result = await walletContract.balanceOf(message.address);
         return result.toNumber() > 0 ? [1] : []; // quickfix as we dont get tokenIds
     } catch (e) {
-        console.log('error getAdultMice', e);
+        logger.error('error getAdultMice', e);
         return 0;
     }
 }
 
 const getBabyMice = async (message) => {
-    console.log('get baby mice for address', message.address);
+    logger.info('get baby mice for address', message.address);
     try {
         const provider = await initProvider(message);
         const walletContract = new Contract(babyMiceContractAddress, babyMiceAbi, provider);
         const result = await walletContract.balanceOf(message.address);
         return result.toNumber() > 0 ? [1] : []; // quickfix as we dont get tokenIds
     } catch (e) {
-        console.log('error getBabyMice', e);
+        logger.error('error getBabyMice', e);
         return 0;
     }
 }
 
 const getCheethGrindingMice = async (message) => {
-    console.log('get adult mice for address', message.address);
+    logger.info('get adult mice for address', message.address);
     try {
         const provider = await initProvider(message);
         const walletContract = new Contract(cheethContractAddress, cheethAbi, provider);
         const result = await walletContract.getTokensStaked(message.address);
         return result.map(r => r.toNumber());
     } catch (e) {
-        console.log('error getAdultMice', e);
+        logger.error('error getAdultMice', e);
         return 0;
     }
 }
 
 const getBreedingMice = async (message) => {
-    console.log('get breeding mice for address', message.address);
+    logger.info('get breeding mice for address', message.address);
     try {
         const provider = await initProvider(message);
         const walletContract = new Contract(babyMiceContractAddress, babyMiceAbi, provider);
@@ -97,10 +97,9 @@ const getBreedingMice = async (message) => {
             result.push(breedingEvent.parentId1);
             result.push(breedingEvent.parentId2);
         }
-        console.log(result);
         return result.map(r => r.toNumber());
     } catch (e) {
-        console.log('error getBreedingMice', e);
+        logger.error('error getBreedingMice', e);
         return 0;
     }
 }
