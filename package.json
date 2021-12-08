@@ -20,10 +20,14 @@
     "dotenv": "^10.0.0",
     "ethers": "^5.5.2",
     "express": "^4.17.0",
+    "express-mongo-sanitize": "^2.1.0",
     "helmet": "^3.21.2",
+    "http-status": "^1.5.0",
     "mongoose": "^6.0.14",
     "simple-statistics": "^7.7.0",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "winston": "^3.3.3",
+    "xss-clean": "^0.1.1"
   },
   "author": "Oliver Renner",
   "license": "MIT",
