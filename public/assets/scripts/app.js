@@ -71,7 +71,7 @@ const generateMessage = async () => {
 };
 
 const amountOfMemes = 5;
-let memeIdx = 1;
+let memeIdx = 0;
 const nextMeme = () => {
     memeIdx += 1;
     if (memeIdx > amountOfMemes) {
