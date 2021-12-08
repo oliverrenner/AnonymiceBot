@@ -38,9 +38,7 @@ class SignInController {
     }
 
     const guild = DiscordBot.getGuild(process.env.DISCORD_GUILD_ID);
-    const discordUser = guild.members.fetch(
-      verificationRequestRecord.userId
-    );
+    const discordUser = await guild.members.fetch(verificationRequestRecord.userId);
 
     // add or revoke roles of user
     const status = await manageRolesOfUser(guild, discordUser, message);

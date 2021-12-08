@@ -10,7 +10,7 @@ const {
 const assignOrRevokeRole = (assign, role, discordUser) => {
   if (!role || !discordUser) {
     console.log("Role or User doesen't exist.");
-    return;
+    return null;
   }
   if (assign) {
     discordUser.roles.add(role);
