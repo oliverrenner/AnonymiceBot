@@ -7,7 +7,8 @@ const mongoSanitize = require('express-mongo-sanitize');
 const httpStatus = require("http-status")
 
 const RequestError = require('./utils/RequestError');
-const signIn = require('./controllers/signin');
+const signinController = require('./controllers/signin');
+const statsController = require('./controllers/stats');
 
 const app = express();
 
@@ -46,8 +47,26 @@ app.get("/verification-page.html", function (request, response) {
 
 
 app.post("/api/sign_in", async (req, res) => {
-  signIn.post(req, res);
+  signinController.post(req, res);
 });
+
+/* stats */
+app.get("/api/stats/total", async(req, res) => {
+  statsController.getTotal(req, res);
+})
+
+app.get("/api/stats/mice", async(req, res) => {
+  statsController.getGenesis(req, res);
+})
+
+app.get("/api/stats/babymice", async(req, res) => {
+  statsController.getBabies(req, res);
+})
+
+app.get("/api/stats/verifications", async(req, res) => {
+  statsController.getVerifications(req, res);
+})
+
 
 // send back a 404 error for any unknown request
 app.use((req, res, next) => {
