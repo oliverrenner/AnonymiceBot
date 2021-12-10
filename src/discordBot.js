@@ -58,15 +58,23 @@ class DiscordBot {
     this.client.on("interactionCreate", async (interaction) => {
       if (!interaction.isCommand()) return;
       const commandHandler = this.discordBotCommands.find(
-        (handler) => handler.getCommand().name === interaction.commandName
+          (handler) => handler.getCommand().name === interaction.commandName
       );
       if (!commandHandler) return;
       await commandHandler.handle(interaction);
     });
+
+    // Info message for people who use the wrong command
+    this.client.on('messageCreate', async message => {
+      if (message.author.bot) return;
+      if (message.content.startsWith("!verify") || message.content.startsWith("/verify") || message.content.startsWith("!join")) {
+        await message.reply("To verify your Mice, please type: **/join**");
+      }
+    });
   }
 
   stop() {
-    this.client.destroy();  
+    this.client.destroy();
   }
 }
 
