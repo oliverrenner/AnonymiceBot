@@ -14,7 +14,7 @@ class DiscordBot {
 
     //discord client
     this.client = new Client({
-      intents: [Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILDS],
+      intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
     });
 
     this.discordBotCommands = [new VerificationRequestCommand({
