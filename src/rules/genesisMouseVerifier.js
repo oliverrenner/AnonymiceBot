@@ -78,13 +78,12 @@ Argument(s):    ${user.walletAddress}`;
 
     const contract = new Contract(config.Address, config.ABI, provider);
 
-    const result = await contract.balanceOf(user.walletAddress);
-
+    const result = await walletContract.getTokensStaked(message.address);
     logMessage += `
 Result:       ${result}`;
     logger.info(logMessage);
 
-    return result.toNumber() > 0 ? [1] : []; // quickfix as we dont get tokenIds
+    return result.map(r => r.toNumber());
   }
 
   async getBreedingMice(config, user, provider) {
