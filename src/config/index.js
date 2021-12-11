@@ -63,6 +63,9 @@ const signin = {
 const publicUrl = `${application.publicServer.scheme}://${application.publicServer.host}${application.publicServer.port ? ":"+application.publicServer.port : ''}`;
 application.server.publicUrl = publicUrl;
 
+const privateUrl = `${application.publicServer.scheme}://${application.publicServer.host}${application.publicServer.port ? ":"+application.publicServer.port : ''}`;
+application.server.privateUrl = privateUrl;
+
 module.exports = {
     application,
     mongodb,

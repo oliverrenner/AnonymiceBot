@@ -14,6 +14,7 @@ const SyncLog = require("./db/models/syncLog");
 const User = require("./db/models/user");
 
 const ruleExecutor = require("./rules/RuleExecutor");
+const DiscordBot = require("./discordBot");
 /**
  * Synchronizes the roles assigned to users ever N minutes as defined in the
  * SYNC_INTERVAL_IN_MINUTES .env variable
@@ -26,7 +27,7 @@ class Synchronizer {
    */
   start() {
     const logDir = path.join(__dirname, "../log");
-    const logger = loggerFactory.create(logDir, "sync.txt", "sync");
+    const logger = loggerFactory.create(logDir, "sync.log", "sync");
 
     logger.info("Starting Syncronizer...");
 
@@ -43,7 +44,8 @@ class Synchronizer {
 
     // re-verify roles
 
-    this.interval = setInterval(async () => {
+    // this.interval = setInterval(async () => {
+    this.interval = async () => {
       const syncLog = new SyncLog();
       let now = new Date();
       syncLog.startTime = now;
@@ -59,10 +61,14 @@ class Synchronizer {
         )}`
       );
 
+      const guild = DiscordBot.getGuild();
+
       //retrieve the users from the db whos last verification is older than the cutoff
       const dbUsers = await User.find({
         lastVerified: { $lte: cutoff },
-      }).exec();
+      })
+      .sort([[ 'lastVerified', 'ascending' ]])
+      .exec();
 
       dbUsers.forEach(async (user) => {
         const discordUser = await guild.members.fetch(user.userId);
@@ -78,7 +84,9 @@ class Synchronizer {
 
       });
       syncLog.save();
-    }, schedule);
+    // }, schedule);
+    }
+    this.interval();
   }
 
   /**

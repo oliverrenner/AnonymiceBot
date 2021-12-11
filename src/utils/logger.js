@@ -17,7 +17,7 @@ if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir);
 }
 
-const filename = path.join(logDir, "results.log");
+const filename = path.join(logDir, "app.log");
 
 const logger = createLogger({
   // change level if in dev environment versus production

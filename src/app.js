@@ -12,7 +12,6 @@ const helmet = require("helmet");
 const xss = require("xss-clean");
 const mongoSanitize = require("express-mongo-sanitize");
 
-const RequestError = require("./utils/RequestError");
 const signinPageController = require("./controllers/signinPageController");
 const signinApiController = require("./controllers/signinApiController");
 const statsApiController = require("./controllers/statsApiController");
