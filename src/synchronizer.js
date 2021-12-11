@@ -46,7 +46,8 @@ class Synchronizer {
 
     // re-verify roles
 
-    this.interval = setInterval(async () => {
+    // this.interval = setInterval(async () => {
+    this.interval = async () => {
       const syncLog = new SyncLog();
       let now = new Date();
       syncLog.startTime = now;
@@ -81,7 +82,7 @@ class Synchronizer {
         allMembers.push(role.members);
       });
 
-      if(!allMembersByRole.length) {
+      if(!allMembers.length) {
         logger.info(
           `There are no users who need reverification since ${this.toLocaleFormat(cutoff)}`
         );
@@ -95,12 +96,16 @@ class Synchronizer {
           `Reverifying user: ${discordUser.displayName} (${discordUser.nickname}) using wallet ${user.walletAddress}`
         );
 
-        let results = await ruleExecutor.run(user);
-        
-        
-        syncLog.save();
+        let status = await ruleExecutor.run(user);
+        user.status = status;
+        user.lastVerified = now;
+        user.save();
+
       });
-    }, schedule); // daily
+      syncLog.save();
+    // }, schedule); // daily
+    }
+    this.interval()
   }
 
   /**

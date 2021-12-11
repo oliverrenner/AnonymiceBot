@@ -78,7 +78,7 @@ Argument(s):    ${user.walletAddress}`;
 
     const contract = new Contract(config.Address, config.ABI, provider);
 
-    const result = await walletContract.getTokensStaked(message.address);
+    const result = await contract.getTokensStaked(user.walletAddress);
     logMessage += `
 Result:       ${result}`;
     logger.info(logMessage);
