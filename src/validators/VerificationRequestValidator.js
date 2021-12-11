@@ -1,29 +1,29 @@
 const config = require("../config");
-const RequestError = require("../utils/RequestError");
 const errorMessages = {
-  badRequestMessage: "Could not process the request.",
-  couldNotLocateRequestIdMessage: "Could not locate the requestId.",
+  badRequestMessage: "Sorry. We cannot process your verification request.",
   expiredRequestIdMessage:
     "Invalid request, maybe it expired (timeout = " +
     config.signin.verificationTimeoutInNumberOfMinutes +
-    "min). Please generate a new request in Discord.",
+    "min).",
   completedRequestIdMessage:
-    "This verification has already been used, please create a new one!",
+    "This verification has already been used.",
 };
 
 class VerificationRequestValidator {
   validate(verificationRequest) {
     if (!verificationRequest) {
-      throw new RequestError(422, errorMessages.badRequestMessage);
+      return new ValidationResult(errorMessages.badRequestMessage);
     }
 
     if (this.isExpired(verificationRequest)) {
-      throw new RequestError(422, errorMessages.expiredRequestIdMessage);
+      return new ValidationResult(errorMessages.expiredRequestIdMessage);
     }
 
     if (this.isCompleted(verificationRequest)) {
-      throw new RequestError(422, errorMessages.completedRequestIdMessage);
+      return new ValidationResult(errorMessages.completedRequestIdMessage);
     }
+
+    return new ValidationResult();
   }
 
   isExpired(verificationRequest) {
@@ -36,6 +36,24 @@ class VerificationRequestValidator {
 
   isCompleted(verificationRequest) {
     return verificationRequest.completed === true;
+  }
+
+  getBadRequestErrorMessage() {
+    return errorMessages.badRequestMessage;
+  }
+}
+
+class ValidationResult {
+  constructor(errorMessage) {
+    this.errorMessage = errorMessage;
+  }
+
+  isValid() {
+    let hasError = this.errorMessage && this.errorMessage.length
+    return !hasError;
+  }
+  getErrorMessage() {
+    return this.errorMessage;
   }
 }
 

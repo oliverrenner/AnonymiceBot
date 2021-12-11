@@ -1,3 +1,4 @@
+const config = require("../../config");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageActionRow, MessageButton } = require("discord.js");
 
@@ -8,19 +9,18 @@ const VERIFICATION_COMMAND = "join";
 const VERIFICATION_COMMAND_DESCRIPTION = "Verify your Mice and receive channel access!";
 
 class VerificationRequestCommandHandler {
-  constructor(config) {
-    
-    this.config = config;
-
+  
+  constructor() {
     this.slashCommand = new SlashCommandBuilder()
       .setName(VERIFICATION_COMMAND)
       .setDescription(VERIFICATION_COMMAND_DESCRIPTION);
   }
 
+  /* helper to retrieve the underlying discord slash command instance */
   getCommand() {
     return this.slashCommand;
   }
-  /* --------------------- */
+  /* ---------------------------------------------------------------- */
 
   /* implementation */
   async handle(interaction) {
@@ -30,7 +30,7 @@ class VerificationRequestCommandHandler {
     const verificationRequest = {
       userId: interaction.user.id,
       requestId,
-      url: `${this.config.webServerPublicUrl}/${this.config.verificationPage}?requestId=${requestId}`,
+      url: `${config.application.server.publicUrl}/${config.discord.commands.verification.page}?requestId=${requestId}`,
       ts: new Date().getTime(),
       completed: false,
     };
@@ -58,4 +58,4 @@ class VerificationRequestCommandHandler {
   }
 }
 
-module.exports = VerificationRequestCommandHandler;
+module.exports = new VerificationRequestCommandHandler();

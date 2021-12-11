@@ -1,12 +1,33 @@
+/*##############################################################################
+# File: discordBot.js                                                          #
+# Project: Anonymice - Discord Bot                                             #
+# Author(s): Oliver Renner (@_orenner) & slingn.eth (@slingncrypto)            #
+# © 2021                                                                       #
+###############################################################################*/
+
 const config = require("./config");
 const logger = require("./utils/logger");
+const fs = require("fs");
+const path = require("path");
 const { Client, Intents } = require("discord.js");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 
-//todo: dynamically load all commands from commands dir
-const VerificationRequestCommand = require("./discordBot/commands/VerificationRequestCommand");
+//register all discord command handlers defined in discordBot/commandHandlers directory
+const commandHandlerDir = path.join(__dirname, "./discordBot/commandHandlers");
+const commandHandlerFiles = fs
+  .readdirSync(commandHandlerDir)
+  .filter((file) => file.endsWith(".js"));
+const commandHandlers = [];
+commandHandlerFiles.forEach((f) => {
+  commandHandlers.push(require(path.join(commandHandlerDir, f)));
+});
 
+/**
+ * Provides a lightweight wrapper around discordjs
+ * - Automatically registers any commandHandlers found in ./discordBot/commandHandlers
+ * - Forwards calls to the appropriate commandHandler based on received interactions
+ */
 class DiscordBot {
   constructor() {
     this.webServerConfig = config.application.server;
@@ -14,26 +35,44 @@ class DiscordBot {
 
     //discord client
     this.client = new Client({
-      intents: [Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILDS],
+      intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
     });
+  }
 
-    this.discordBotCommands = [new VerificationRequestCommand({
-      webServerPublicUrl: this.webServerConfig.publicUrl,
-      verificationPage: this.config.commands.verification.page
-    })];
+  /**
+   * Retreives the Discord instance as defined in .env variable DISCORD_GUILD_ID
+   * @returns Discord Guild
+   */
+  getGuild() {
+    return this.client.guilds.cache.get(this.config.guildId);
+  }
+
+  /**
+   * Starts the Discord Bot and adds an event listener for `interactionCreate`
+   * events.
+   *
+   * When an `interactionCreate` event is received, forwards the event to an
+   * appropriate `commandHandler`. If no `commandHandler` supporting the
+   * interaction is found, ignores the interaction.
+   */
+  async start() {
 
     //discord bot rest configuration
-    const rest = new REST({ version: "9" });
-
-    rest
+    new REST({ version: "9" })
       .setToken(this.config.botToken)
-      .put(Routes.applicationGuildCommands(this.config.clientId, this.config.guildId), {
-        body: this.discordBotCommands
-          .map((c) => c.getCommand())
-          .map((c) => c.toJSON()),
-      })
+      .put(
+        Routes.applicationGuildCommands(
+          this.config.clientId,
+          this.config.guildId
+        ),
+        {
+          body: commandHandlers
+            .map((c) => c.getCommand())
+            .map((c) => c.toJSON()),
+        }
+      )
       .then(() => {
-        this.discordBotCommands.forEach((command) => {
+        commandHandlers.forEach((command) => {
           let slashCommand = command.getCommand();
           logger.info(
             `Successfully registered command: '/${slashCommand.name}' | Description: '${slashCommand.description}'`
@@ -42,13 +81,7 @@ class DiscordBot {
         logger.info("Done registering application commands.");
       })
       .catch(console.error);
-  }
 
-  getGuild() {
-    return this.client.guilds.cache.get(this.config.guildId);
-  }
-
-  async start() {
     await this.client.login(this.config.botToken);
 
     this.client.once("ready", () => {
@@ -57,16 +90,21 @@ class DiscordBot {
 
     this.client.on("interactionCreate", async (interaction) => {
       if (!interaction.isCommand()) return;
-      const commandHandler = this.discordBotCommands.find(
+      const commandHandler = commandHandlers.find(
         (handler) => handler.getCommand().name === interaction.commandName
       );
+
       if (!commandHandler) return;
+
       await commandHandler.handle(interaction);
     });
   }
 
+  /**
+   * Disconnects the Discord Bot from the Discord API
+   */
   stop() {
-    this.client.destroy();  
+    this.client.destroy();
   }
 }
 

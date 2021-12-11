@@ -1,30 +1,36 @@
 /* --------------------------------------------------------- */
 /* document ready */
 $(() => {
-    if (!hasWeb3()) {
-        $("#web3-error-popup").show();
-    } else {
-        init();
-    }
+  if (typeof errorModel !== "undefined" && errorModel.message) {
+    showError(errorModel.message);
+    return;
+  }
+
+  if (!hasWeb3()) {
+    $("#web3-error-popup").removeClass("hidden");
+    $("#web3-error-popup")[0].scrollIntoView();
+  } else {
+    init();
+  }
 });
 /* --------------------------------------------------------- */
 
 /* --------------------------------------------------------- */
 /* apis */
-const apiUrlSignIn = "/api/sign_in";
+const apiUrlSignIn = "/api/signin";
 /* --------------------------------------------------------- */
 
 /* --------------------------------------------------------- */
 /* utility methods */
 const hasWeb3 = function () {
-    return window.ethereum !== undefined;
+  return window.ethereum !== undefined;
 };
 
 function displayAddress(address, cb) {
-    provider.lookupAddress(address).then((res) => {
-        let result = res || address.substring(0, 8);
-        cb(result);
-    });
+  provider.lookupAddress(address).then((res) => {
+    let result = res || address.substring(0, 8);
+    cb(result);
+  });
 }
 
 /* --------------------------------------------------------- */
@@ -32,111 +38,104 @@ function displayAddress(address, cb) {
 /* --------------------------------------------------------- */
 /* app */
 const init = async () => {
-    window.provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-    window.signer = provider.getSigner();
-    await provider.send("eth_requestAccounts", []);
-    let address = await signer.getAddress();
-    window.account = ethers.utils.getAddress(address);
-    $("#walletAddressValue").text(account);
+  window.provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+  window.signer = provider.getSigner();
+  await provider.send("eth_requestAccounts", []);
+  let address = await signer.getAddress();
+  window.account = ethers.utils.getAddress(address);
+  $("#walletAddressValue").text(account);
 
-    displayAddress(account, (ens) => {
-        $("#walletAddressValue").text(ens || account);
-    });
+  displayAddress(account, (ens) => {
+    $("#walletAddressValue").text(ens || account);
+  });
 
-    $("#signin").click(async () => {
-        $("#signin").prop('disabled', true);
-        await signMessage().catch(() => $("#signin").prop('disabled', false));
-    });
+  $("#signin").click(async () => {
+    $("#signin").prop("disabled", true);
+    await signMessage().catch(() => $("#signin").prop("disabled", false));
+  });
 };
 /* --------------------------------------------------------- */
 
 /* signature process */
 
 const generateMessage = async () => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
 
-    let message = {
-        domain: document.location.host,
-        address: window.account,
-        chainId: `${await provider.getNetwork().then(({chainId}) => chainId)}`,
-        uri: document.location.origin,
-        version: "1",
-        statement: "Anonymice Discord Bot",
-        type: "Personal signature",
-        nonce: urlParams.get("requestId"),
-    };
+  let message = {
+    domain: document.location.host,
+    address: window.account,
+    chainId: `${await provider.getNetwork().then(({ chainId }) => chainId)}`,
+    uri: document.location.origin,
+    version: "1",
+    statement: "Anonymice Discord Bot",
+    type: "Personal signature",
+    nonce: urlParams.get("requestId"),
+  };
 
-    return message;
+  return message;
 };
 
 const amountOfMemes = 5;
 let memeIdx = 0;
 const nextMeme = () => {
-    memeIdx += 1;
-    if (memeIdx > amountOfMemes) {
-        memeIdx = 1;
-    }
-    $(".meme-img").attr("src", "assets/images/meme_" + memeIdx + ".png");
-}
+  memeIdx += 1;
+  if (memeIdx > amountOfMemes) {
+    memeIdx = 1;
+  }
+  $(".meme-img").attr("src", "assets/images/meme_" + memeIdx + ".png");
+};
 
 const signMessage = async () => {
-    let message = await generateMessage();
-    let jsonMessage = JSON.stringify(message);
-    let signature = await provider.getSigner().signMessage(jsonMessage);
+  let message = await generateMessage();
+  let jsonMessage = JSON.stringify(message);
+  let signature = await provider.getSigner().signMessage(jsonMessage);
 
-    $(".memes").removeClass('hidden');
-    message.signature = signature;
+  $(".memes").removeClass("hidden");
+  message.signature = signature;
 
-    fetch(apiUrlSignIn, {
-        method: "POST",
-        body: JSON.stringify(message),
-        headers: {"Content-Type": "application/json"},
-        credentials: "include",
+  let genericErrorMessage = 'An error occurred. Please try again.';
+  $.ajax({
+    type: "POST",
+    url: apiUrlSignIn,
+    dataTye: "json",
+    data: message,
+    statusCode: {
+      422: function (res) {
+        showError(res.text);
+      },
+    },
+  })
+    .done((data) => {
+      debugger;
+
+      $("#signin").prop("disabled", false);
+
+      if(!data || !data.status || !Array.isArray(data.status)) {
+        showError(genericErrorMessage);
+        return;
+      }
+
+      var roles = data.status.filter(s => s.isSuccess === true).map(s => s.name).join(', ');
+      if (roles) {
+        $(".success-bad").addClass("hidden");
+        $(".roles").text(roles);
+      } else {
+        $(".success-good").addClass("hidden");
+        $(".roles").text("None. Please verify again with a different wallet.");
+      }
+      $(".verify").addClass("hidden");
+      $(".meme-message").addClass("hidden");
+      $(".success").removeClass("hidden");
     })
-        .then(handleFetchErrors)
-        .then(async (res) => {
-            $("#signin").prop('disabled', false);
-            if (res.status === 200) {
-                res.json().then(data => {
-                    let roles = data.status.roles.join(", ");
-                    if (roles) {
-                        $(".success-bad").addClass('hidden');
-                        $(".roles").text(roles);
-                    } else {
-                        $(".success-good").addClass('hidden');
-                        $(".roles").text("None. Please verify again with a different wallet.");
-                    }
-                    $(".verify").addClass('hidden');
-                    $(".meme-message").addClass('hidden');
-                    $(".success").removeClass('hidden');
-                });
-            } else {
-                res.json().then((err) => {
-                    console.error(err);
-                });
-            }
-        })
-        .catch((err) => {
-            $("#signin").prop('disabled', false);
-            console.error(err);
-        });
+    .fail((xhr, textStatus, errorThrown) => {
+      showError(genericErrorMessage);
+    });
 };
 
-const handleFetchErrors = async (response) => {
-    if (!response.ok) {
-        var responseMessage = await response.json().then(data => {
-            $("#errorText").text(data.message);
-            $("#error-popup-button").show();
-            $("#error-popup").show();
-        })
-
-    }
-    return response;
-};
-
-const closeErrorPopup = () => {
-    $("#errorText").text('');
-    $("#error-popup-button").hide();
-    $("#error-popup").hide();
+const showError = async (message) => {
+  $("#errorText").text(message);
+  $("#error-popup-button").show();
+  $("#error-popup").show();
+  $("#error-popup")[0].scrollIntoView();
 };

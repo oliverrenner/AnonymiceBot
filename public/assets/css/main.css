@@ -153,37 +153,27 @@ h4 {
   display: none;
 }
 
-.error-popup {
+.error-popup{
+  /* To make the modal window center */
   background-color: var(--main-bg-color);
-  z-index: 99999;
-  color: var(--main-text-color);
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 53vw;
-  height: 35vh;
+  box-shadow: 0 0 5000px 5000px rgba(0, 0, 0, 0.88);
   border: outset 1vw var(--main-border-color);
   border-radius: 0.2em;
-  padding: 5px;
-  font-size: 2.7vw;
-  box-shadow: 0 0 5000px 5000px rgba(0, 0, 0, 0.88);
-  padding: 20px;
-  text-align: center;
-}
 
-.error-popup p {
-  width: 100%;
-  position: absolute;
-  top: 50%;
+  position: fixed;
   left: 50%;
+  top: 50%;
   transform: translate(-50%, -50%);
-  margin: 20px 0;
-}
+  padding: 15px;
+  /* To make the modal content center (additional)*/
+  text-align: center;
+  width: 50%;
+  font-size: 1.5em;
+  }
 
-.error-popup button {
-  line-height: 3vw;
-  position: relative;
-  top: 80%;
-  width: 20%;
-}
+  @media only screen and (max-width: 768px) {
+    .error-popup {
+      width: 75%;
+    }
+  }
+  

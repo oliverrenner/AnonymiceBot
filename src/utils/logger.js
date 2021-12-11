@@ -1,3 +1,10 @@
+/*##############################################################################
+# File: logger.js                                                              #
+# Project: Anonymice - Discord Bot                                             #
+# Author(s): Oliver Renner (@_orenner) & slingn.eth (@slingncrypto)            #
+# © 2021                                                                       #
+###############################################################################*/
+
 const { createLogger, format, transports } = require("winston");
 const fs = require("fs");
 const path = require("path");
