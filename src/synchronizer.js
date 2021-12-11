@@ -68,27 +68,6 @@ class Synchronizer {
         lastVerified: { $lte: cutoff },
       }).exec();
 
-      let configuredRoles = new Set(settings.rules.map((r) => r.roleId));
-
-      const guild = DiscordBot.getGuild(process.env.DISCORD_GUILD_ID);
-      const discordRoles = await guild.roles.fetch();
-      const rolesToProcess = discordRoles.filter((role) => {
-        if (configuredRoles.has(role.id)) {
-          return role;
-        }
-      });
-      let allMembers = [];
-      rolesToProcess.forEach((role) => {
-        allMembers.push(role.members);
-      });
-
-      if(!allMembers.length) {
-        logger.info(
-          `There are no users who need reverification since ${this.toLocaleFormat(cutoff)}`
-        );
-        return;
-      }
-
       dbUsers.forEach(async (user) => {
         const discordUser = await guild.members.fetch(user.userId);
 
