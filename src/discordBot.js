@@ -98,6 +98,14 @@ class DiscordBot {
 
       await commandHandler.handle(interaction);
     });
+
+    // Info message for people who use the wrong command
+    this.client.on('messageCreate', async message => {
+      if (message.author.bot) return;
+      if (message.content.startsWith("!verify") || message.content.startsWith("/verify") || message.content.startsWith("!join")) {
+        await message.reply("To verify your Mice, please type: **/join**");
+      }
+    });
   }
 
   /**
