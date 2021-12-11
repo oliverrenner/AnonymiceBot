@@ -56,7 +56,6 @@ class DiscordBot {
    * interaction is found, ignores the interaction.
    */
   async start() {
-
     //discord bot rest configuration
     new REST({ version: "9" })
       .setToken(this.config.botToken)
@@ -100,9 +99,13 @@ class DiscordBot {
     });
 
     // Info message for people who use the wrong command
-    this.client.on('messageCreate', async message => {
+    this.client.on("messageCreate", async (message) => {
       if (message.author.bot) return;
-      if (message.content.startsWith("!verify") || message.content.startsWith("/verify") || message.content.startsWith("!join")) {
+      if (
+        message.content.startsWith("!verify") ||
+        message.content.startsWith("/verify") ||
+        message.content.startsWith("!join")
+      ) {
         await message.reply("To verify your Mice, please type: **/join**");
       }
     });

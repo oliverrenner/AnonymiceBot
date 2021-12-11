@@ -61,8 +61,8 @@ class SignInApiController {
     const status = await ruleExecutor.run(user);
 
     //mark verification request complete
-    // verificationRequestRecord.completed = true;
-    // verificationRequestRecord.save();
+    verificationRequestRecord.completed = true;
+    verificationRequestRecord.save();
 
     user.status = status;
     user.save();

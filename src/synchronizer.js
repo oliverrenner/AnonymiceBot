@@ -97,21 +97,7 @@ class Synchronizer {
 
         let results = await ruleExecutor.run(user);
         
-
-        // //if the user isnt in the discord anymore, remove them
-        // if (!discordUser) {
-        //   await User.deleteOne({ userId: user.userId }).exec();
-        // } else {
-        //   // add or revoke roles of user
-        //   const status = await manageRolesOfUser(guild, discordUser, {
-        //     chainId: 1, //todo: configurable?
-        //     address: user.walletAddress,
-        //   });
-        //   user.lastVerified = now;
-        //   user.status = status;
-        //   user.save();
-        // }
-
+        
         syncLog.save();
       });
     }, schedule); // daily

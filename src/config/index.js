@@ -21,6 +21,11 @@ const application = {
         scheme: process.env.APPLICATION_SERVER_SCHEME,
         host: process.env.APPLICATION_SERVER_HOST,
         port: process.env.APPLICATION_SERVER_PORT
+    },
+    publicServer: {
+        scheme: process.env.APPLICATION_SERVER_PUBLIC_SCHEME,
+        host: process.env.APPLICATION_SERVER_PUBLIC_HOST,
+        port: process.env.APPLICATION_SERVER_PUBLIC_PORT
     }
 }
 
@@ -55,7 +60,7 @@ const signin = {
 }
 
 //helper to concatenate application.server variables into a single consumable url
-const publicUrl = `${application.server.scheme}://${application.server.host}${application.server.port ? ":"+application.server.port : ''}`;
+const publicUrl = `${application.publicServer.scheme}://${application.publicServer.host}${application.publicServer.port ? ":"+application.publicServer.port : ''}`;
 application.server.publicUrl = publicUrl;
 
 module.exports = {
