@@ -1,3 +1,10 @@
+/*##############################################################################
+# File: genericContractVerifier.js                                             #
+# Project: Anonymice - Discord Bot                                             #
+# Author(s): Oliver Renner (@_orenner) & slingn.eth (@slingncrypto)            #
+# © 2021                                                                       #
+###############################################################################*/
+
 const getProvider = require("../web3/provider");
 const { Contract, utils } = require("ethers");
 

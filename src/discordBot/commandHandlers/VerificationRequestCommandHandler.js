@@ -1,3 +1,10 @@
+/*##############################################################################
+# File: VerificationRequestCommandHandler.js                                   #
+# Project: Anonymice - Discord Bot                                             #
+# Author(s): Oliver Renner (@_orenner) & slingn.eth (@slingncrypto)            #
+# © 2021                                                                       #
+###############################################################################*/
+
 const config = require("../../config");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageActionRow, MessageButton } = require("discord.js");

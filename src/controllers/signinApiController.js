@@ -1,13 +1,16 @@
+/*##############################################################################
+# File: signinApiController.js                                                 #
+# Project: Anonymice - Discord Bot                                             #
+# Author(s): Oliver Renner (@_orenner) & slingn.eth (@slingncrypto)            #
+# © 2021                                                                       #
+###############################################################################*/
+
 const logger = require("../utils/logger");
 const RequestError = require("../utils/RequestError");
 const VerifySignature = require("../web3/signature");
 const verificationRequestValidator = require("../validators/VerificationRequestValidator");
 const VerificationRequest = require("../db/models/verificationRequest");
 const User = require("../db/models/user");
-
-const DiscordBot = require("../discordBot");
-const { manageRolesOfUser } = require("../discordBot/roleManager");
-
 const ruleExecutor = require("../rules/RuleExecutor");
 
 class SignInApiController {
@@ -49,10 +52,8 @@ class SignInApiController {
 
     //retrive the first user found tied to the wallet address of signer
     //or a new user record if none exists
-    const user = await this.getUser(
-      message.address
-    );
-    
+    const user = await this.getUser(message.address);
+
     user.userId = verificationRequestRecord.userId;
     user.walletAddress = message.address;
     user.lastVerified = verificationRequestRecord.ts;
@@ -77,7 +78,7 @@ class SignInApiController {
   }
 
   async getUser(walletAddress) {
-    const user = await User.findOne({ walletAddress: walletAddress}).exec();
+    const user = await User.findOne({ walletAddress: walletAddress }).exec();
     return user || new User();
   }
 

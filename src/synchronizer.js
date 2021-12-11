@@ -13,10 +13,7 @@ const loggerFactory = require("./utils/loggerFactory");
 const SyncLog = require("./db/models/syncLog");
 const User = require("./db/models/user");
 
-const DiscordBot = require("./discordBot");
 const ruleExecutor = require("./rules/RuleExecutor");
-const settings = require("../settings");
-
 /**
  * Synchronizes the roles assigned to users ever N minutes as defined in the
  * SYNC_INTERVAL_IN_MINUTES .env variable
@@ -46,8 +43,7 @@ class Synchronizer {
 
     // re-verify roles
 
-    // this.interval = setInterval(async () => {
-    this.interval = async () => {
+    this.interval = setInterval(async () => {
       const syncLog = new SyncLog();
       let now = new Date();
       syncLog.startTime = now;
@@ -82,9 +78,7 @@ class Synchronizer {
 
       });
       syncLog.save();
-    // }, schedule); // daily
-    }
-    this.interval()
+    }, schedule);
   }
 
   /**

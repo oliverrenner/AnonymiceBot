@@ -107,8 +107,6 @@ const signMessage = async () => {
     },
   })
     .done((data) => {
-      debugger;
-
       $("#signin").prop("disabled", false);
 
       if(!data || !data.status || !Array.isArray(data.status)) {

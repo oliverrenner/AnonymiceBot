@@ -1,3 +1,10 @@
+/*##############################################################################
+# File: signinPageController.js                                                #
+# Project: Anonymice - Discord Bot                                             #
+# Author(s): Oliver Renner (@_orenner) & slingn.eth (@slingncrypto)            #
+# © 2021                                                                       #
+###############################################################################*/
+
 const VerificationRequest = require("../db/models/verificationRequest");
 const verificationRequestValidator = require("../validators/VerificationRequestValidator");
 const viewName = "pages/signin";
