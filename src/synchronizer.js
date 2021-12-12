@@ -85,8 +85,8 @@ class Synchronizer {
       });
       syncLog.save();
     }, schedule);
-    }
-    // this.interval();
+    
+    //} this.interval();
   }
 
   /**
