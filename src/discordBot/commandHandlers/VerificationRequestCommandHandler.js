@@ -34,7 +34,7 @@ class VerificationRequestCommandHandler {
     const requestId = uuid.v4();
 
     //use private url when running in dev mode
-    let baseUrl = process.env.NODE_ENV === "development" ? config.application.server.privateUrl : config.application.server.publicUrl;
+    let baseUrl = process.env.NODE_ENV === "production" ? config.application.server.publicUrl : config.application.server.privateUrl;
 
     //create a verification request based on the user interaction
     const verificationRequest = {
