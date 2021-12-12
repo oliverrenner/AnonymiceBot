@@ -5,7 +5,6 @@
 # © 2021                                                                       #
 ###############################################################################*/
 
-const logger = require("./logger");
 const path = require("path");
 const fs = require("fs");
 const banner = fs.readFileSync(path.join(__dirname, "../banner.txt"));

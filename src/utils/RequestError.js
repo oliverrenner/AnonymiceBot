@@ -1,3 +1,10 @@
+/*##############################################################################
+# File: RequestError.js                                                        #
+# Project: Anonymice - Discord Bot                                             #
+# Author(s): Oliver Renner (@_orenner) & slingn.eth (@slingncrypto)            #
+# © 2021                                                                       #
+###############################################################################*/
+
 class RequestError extends Error {
     constructor(statusCode, message, isOperational = true, stack = '') {
       super(message);

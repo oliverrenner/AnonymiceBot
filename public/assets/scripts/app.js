@@ -94,7 +94,7 @@ const signMessage = async () => {
   $(".memes").removeClass("hidden");
   message.signature = signature;
 
-  let genericErrorMessage = 'An error occurred. Please try again.';
+  let genericErrorMessage = "An error occurred. Please try again.";
   $.ajax({
     type: "POST",
     url: apiUrlSignIn,
@@ -109,12 +109,15 @@ const signMessage = async () => {
     .done((data) => {
       $("#signin").prop("disabled", false);
 
-      if(!data || !data.status || !Array.isArray(data.status)) {
+      if (!data || !data.status || !Array.isArray(data.status)) {
         showError(genericErrorMessage);
         return;
       }
 
-      var roles = data.status.filter(s => s.isSuccess === true).map(s => s.name).join(', ');
+      var roles = data.status
+        .filter((s) => s.isSuccess === true)
+        .map((s) => s.name)
+        .join(", ");
       if (roles) {
         $(".success-bad").addClass("hidden");
         $(".roles").text(roles);

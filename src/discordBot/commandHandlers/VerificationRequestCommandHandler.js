@@ -13,10 +13,10 @@ const uuid = require("uuid");
 const VerificationRequest = require("../../db/models/verificationRequest");
 
 const VERIFICATION_COMMAND = "join";
-const VERIFICATION_COMMAND_DESCRIPTION = "Verify your Mice and receive channel access!";
+const VERIFICATION_COMMAND_DESCRIPTION =
+  "Verify your Mice and receive channel access!";
 
 class VerificationRequestCommandHandler {
-  
   constructor() {
     this.slashCommand = new SlashCommandBuilder()
       .setName(VERIFICATION_COMMAND)
@@ -32,6 +32,9 @@ class VerificationRequestCommandHandler {
   /* implementation */
   async handle(interaction) {
     const requestId = uuid.v4();
+
+    //use private url when running in dev mode
+    baseUrl = process.env.NODE_ENV === "development" ? config.application.server.privateUrl : config.application.server.publicUrl;
 
     //create a verification request based on the user interaction
     const verificationRequest = {

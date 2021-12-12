@@ -2,7 +2,7 @@ const logger = require("../utils/logger");
 const getProvider = require("../web3/provider");
 const { Contract, utils } = require("ethers");
 
-class GenesisMouseVerifier {
+class GenesisMouseVerificationRule {
   constructor(config) {
     this.config = config;
   }
@@ -115,4 +115,4 @@ Result:       ${results}`;
   }
 }
 
-module.exports = GenesisMouseVerifier;
+module.exports = GenesisMouseVerificationRule;
