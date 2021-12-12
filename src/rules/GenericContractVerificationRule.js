@@ -14,7 +14,24 @@ class GenericContractVerificationRule {
     this.logger = require("../utils/logger");
   }
 
-  async execute(user) {
+  async execute(discordUser, role, result) {
+    try {
+      let userQualifiesForRole = result === true;
+      if (userQualifiesForRole && !discordUser.roles.cache.has(role.id)) {
+        this.logger.info(`Assigning Role: ${role.name}`);
+        await discordUser.roles.add(role);
+      } else {
+        if (discordUser.roles.cache.has(role.id)) {
+          this.logger.info(`Removing Role: ${role.name}`);
+          await discordUser.roles.remove(role);
+        }
+      }
+    } catch (err) {
+      this.logger.error(err.message);
+    }
+  }
+
+  async check(user) {
     let logMessage = `Generic Contract Executor is executing:
 Contract:       ${this.config.contractAddress}
 Method:         ${this.config.method}
@@ -33,7 +50,7 @@ Result:       ${result}`;
       this.logger.info(logMessage);
       return count;
     } catch (e) {
-      logger.error(e.message);
+      this.logger.error(e.message);
       return false;
     }
   }

@@ -7,7 +7,28 @@ class GenesisMouseVerificationRule {
     this.config = config;
   }
 
-  async execute(user) {
+  async execute(discordUser, role, result) {
+    // try {
+      let userQualifiesForRole =
+        result.mice.length > 0 ||
+        result.cheethGrinding.length > 0 ||
+        result.breeding.length > 0;
+
+      if (userQualifiesForRole && !discordUser.roles.cache.has(role.id)) {
+        logger.info(`Assigning Role: ${role.name}`);
+        await discordUser.roles.add(role);
+      } else 
+        if (!userQualifiesForRole && discordUser.roles.cache.has(role.id)) {
+          logger.info(`Removing Role: ${role.name}`);
+          await discordUser.roles.remove(role);
+        }
+    // }
+    // catch (err) {
+    //   logger.error(err.message);
+    // }
+  }
+
+  async check(user) {
     const provider = await getProvider();
     let gensisMiceResult = await this.getGenesisMice(
       this.config.AnonymiceContract,
@@ -83,7 +104,7 @@ Argument(s):    ${user.walletAddress}`;
 Result:       ${result}`;
     logger.info(logMessage);
 
-    return result.map(r => r.toNumber());
+    return result.map((r) => r.toNumber());
   }
 
   async getBreedingMice(config, user, provider) {

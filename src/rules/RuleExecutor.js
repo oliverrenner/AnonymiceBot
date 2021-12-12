@@ -20,19 +20,8 @@ class RuleExecutor {
   }
 
   async run(user) {
-    let results = [];
     await this.rules.forEachAsync(async (rule) => {
-      
-      let executionResult = await rule.executor.execute(user);
-      let isSuccess = executionResult !== "undefined" && executionResult;
-
-      let result = {
-        name: rule.name,
-        roleId: rule.roleId,
-        result: typeof(executionResult) === 'undefined' ? {} : executionResult,
-        isSuccess: isSuccess === true,
-      };
-      results.push(result);
+      rule.result = await rule.executor.check(user);
     });
 
     //apply changes to discord user based on the results
@@ -50,26 +39,27 @@ Roles:    ${discordUserCurrentRoles}
 -------------------------------------------------------------------------------`;
     logger.info(logMessage);
 
-    await results.forEachAsync(async (result) => {
+    let results = [];
+    await this.rules.forEachAsync(async (rule) => {
       try {
-        let role = await guild.roles.fetch(result.roleId);
-
-        if (result.isSuccess && !discordUser.roles.cache.has(role.id)) {
-          logger.info(`Assigning Role: ${role.name}`);
-          await discordUser.roles.add(role);
-        } 
-        else {
-  
-          if (discordUser.roles.cache.has(role.id)) {
-            logger.info(`Removing Role: ${role.name}`);
-            await discordUser.roles.remove(role);
-          }
-        }
-      }
-      catch(err) {
+        let role = await guild.roles.fetch(rule.roleId);
+        await rule.executor.execute(
+          discordUser,
+          role,
+          rule.result
+        );
+        
+        results.push({
+          name: rule.name,
+          roleId: rule.roleId,
+          result: rule.result,
+          //todo: clean this up - only used for ui purposes and name is misleading 
+          //removing the role successfully is still success
+          isSuccess: discordUser.roles.cache.has(rule.roleId) 
+        });
+      } catch (err) {
         logger.error(err.message);
       }
-      
     });
 
     let discordUserFinalRoles = [];
@@ -79,7 +69,8 @@ Roles:    ${discordUserCurrentRoles}
     logMessage += `
 Final Roles: ${discordUserFinalRoles}
 -------------------------------------------------------------------------------
-    `
+    `;
+    logger.info(logMessage);
     return results;
   }
 }

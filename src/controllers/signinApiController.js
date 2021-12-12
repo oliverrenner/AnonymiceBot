@@ -53,7 +53,6 @@ class SignInApiController {
     //retrive the first user found tied to the wallet address of signer
     //or a new user record if none exists
     const user = await this.getUser(message.address);
-    
     user.userId = verificationRequestRecord.userId;
     user.walletAddress = message.address;
     user.lastVerified = verificationRequestRecord.ts;
