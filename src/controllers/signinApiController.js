@@ -67,6 +67,17 @@ class SignInApiController {
     user.status = status;
     user.save();
 
+    //in case there are any other users tied to the wallet used to sign in
+    //remove them
+
+    let usersByWallet = await User.find({ walletAddress: message.address}).exec();
+    usersByWallet.forEach(u => {
+      if(u.id !== user.id) {
+        logger.info(`Deleting User using DB id:${u.id} found tied to the same wallet as ${user.id}`);
+        User.deleteOne(u);
+      }
+    });
+
     // return something to frontend .. we're done here
     res
       .status(200)

@@ -15,7 +15,10 @@ class StatsController {
 
   async getGenesis(req, res) {
     const result = await User.count({
-      "status.name": "Mice",
+      $and: [
+        {"status.name": "Mice"},
+        {"status.result.mice": { $gt: 0 } }
+      ]
     });
     res
       .status(200)
@@ -27,7 +30,10 @@ class StatsController {
 
   async getBabies(req, res) {
     const result = await User.count({
-      "status.name": "Baby Mice",
+      $and: [
+        {"status.name": "Baby Mice"},
+        {"status.result": true }
+      ]
     });
     res
       .status(200)
