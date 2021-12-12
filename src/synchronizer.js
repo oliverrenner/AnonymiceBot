@@ -70,6 +70,13 @@ class Synchronizer {
       .sort([[ 'lastVerified', 'ascending' ]])
       .exec();
 
+      if(!dbUsers.length > 0) {
+        logger.info(
+          `No users require re-verification at this time ${this.toLocaleFormat(
+            cutoff
+          )}`
+        );  
+      }
       dbUsers.forEach(async (user) => {
         const discordUser = await guild.members.fetch(user.userId);
 
@@ -86,7 +93,7 @@ class Synchronizer {
       syncLog.save();
     }, schedule);
     
-    //} this.interval();
+    //}; this.interval();
   }
 
   /**

@@ -34,13 +34,13 @@ class VerificationRequestCommandHandler {
     const requestId = uuid.v4();
 
     //use private url when running in dev mode
-    baseUrl = process.env.NODE_ENV === "development" ? config.application.server.privateUrl : config.application.server.publicUrl;
+    let baseUrl = process.env.NODE_ENV === "development" ? config.application.server.privateUrl : config.application.server.publicUrl;
 
     //create a verification request based on the user interaction
     const verificationRequest = {
       userId: interaction.user.id,
       requestId,
-      url: `${config.application.server.publicUrl}/${config.discord.commands.verification.page}?requestId=${requestId}`,
+      url: `${baseUrl}/${config.discord.commands.verification.page}?requestId=${requestId}`,
       ts: new Date().getTime(),
       completed: false,
     };
