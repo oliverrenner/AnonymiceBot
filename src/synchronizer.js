@@ -44,8 +44,8 @@ class Synchronizer {
 
     // re-verify roles
 
-    // this.interval = setInterval(async () => {
-    this.interval = async () => {
+    this.interval = setInterval(async () => {
+    // this.interval = async () => {
       const syncLog = new SyncLog();
       let now = new Date();
       syncLog.startTime = now;
@@ -84,9 +84,9 @@ class Synchronizer {
 
       });
       syncLog.save();
-    // }, schedule);
+    }, schedule);
     }
-    this.interval();
+    // this.interval();
   }
 
   /**
