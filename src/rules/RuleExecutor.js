@@ -50,7 +50,7 @@ Roles:    ${discordUserCurrentRoles}
         );
         
         results.push({
-          name: rule.name,
+          name: role.name,
           roleId: rule.roleId,
           result: rule.result,
           //todo: clean this up - only used for ui purposes and name is misleading 

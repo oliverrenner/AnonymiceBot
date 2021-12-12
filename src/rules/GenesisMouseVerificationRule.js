@@ -8,7 +8,7 @@ class GenesisMouseVerificationRule {
   }
 
   async execute(discordUser, role, result) {
-    // try {
+    try {
       let userQualifiesForRole =
         result.mice.length > 0 ||
         result.cheethGrinding.length > 0 ||
@@ -22,10 +22,10 @@ class GenesisMouseVerificationRule {
           logger.info(`Removing Role: ${role.name}`);
           await discordUser.roles.remove(role);
         }
-    // }
-    // catch (err) {
-    //   logger.error(err.message);
-    // }
+    }
+    catch (err) {
+      logger.error(err.message);
+    }
   }
 
   async check(user) {

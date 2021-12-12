@@ -15,7 +15,7 @@ class StatsController {
 
   async getGenesis(req, res) {
     const result = await User.count({
-      "status.roles": "Mice",
+      "status.name": "Mice",
     });
     res
       .status(200)
@@ -27,7 +27,7 @@ class StatsController {
 
   async getBabies(req, res) {
     const result = await User.count({
-      "status.roles": "Baby Mice",
+      "status.name": "Baby Mice",
     });
     res
       .status(200)
