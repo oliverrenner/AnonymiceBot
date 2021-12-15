@@ -61,8 +61,8 @@ class SignInApiController {
     const status = await ruleExecutor.run(user);
 
     //mark verification request complete
-    verificationRequestRecord.completed = true;
-    verificationRequestRecord.save();
+    // verificationRequestRecord.completed = true;
+    // verificationRequestRecord.save();
 
     user.status = status;
     user.save();
@@ -75,6 +75,16 @@ class SignInApiController {
       if(u.id !== user.id) {
         logger.info(`Deleting User using DB id:${u.id} found tied to the same wallet as ${user.id}`);
         User.deleteOne(u);
+      }
+    });
+
+    //in case there are any other wallets associated with the discord user
+    //remove them
+    let usersByDiscord = await User.find({ userId: user.userId}).exec();
+    usersByDiscord.forEach(u => {
+      if(u.id !== user.id) {
+        logger.info(`Deleting User using DB id:${u.id} which appears to be tied to the same discord user who has signed in ${user.userId}`);
+        User.deleteOne(u).exec();
       }
     });
 

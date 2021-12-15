@@ -63,6 +63,8 @@ application.server.publicUrl = publicUrl;
 const privateUrl = `${application.server.scheme}://${application.server.host}${application.server.port ? ":"+application.server.port : ''}`;
 application.server.privateUrl = privateUrl;
 
+const envName = process.env.NODE_ENV;
+
 module.exports = {
     application,
     mongodb,
@@ -70,5 +72,6 @@ module.exports = {
     signin,
     discord,
     sync,
-    infura
+    infura,
+    envName
 }

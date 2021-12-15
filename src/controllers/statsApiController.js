@@ -4,7 +4,7 @@ const VerificationRequest = require("../db/models/verificationRequest");
 
 class StatsController {
   async getTotal(req, res) {
-    const result = await User.count();
+    const result = await User.count().exec();
     res
       .status(200)
       .json({
@@ -15,10 +15,7 @@ class StatsController {
 
   async getGenesis(req, res) {
     const result = await User.count({
-      $and: [
-        {"status.name": "Mice"},
-        {"status.result.mice": { $gt: 0 } }
-      ]
+      status: { $elemMatch: { role: "Genesis Mice", qualified: true } },
     });
     res
       .status(200)
@@ -30,10 +27,7 @@ class StatsController {
 
   async getBabies(req, res) {
     const result = await User.count({
-      $and: [
-        {"status.name": "Baby Mice"},
-        {"status.result": true }
-      ]
+      status: { $elemMatch: { role: "Baby Mice", qualified: false } },
     });
     res
       .status(200)

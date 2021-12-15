@@ -106,3 +106,6 @@ dist
 
 # VS Code - local settings
 .vscode/settings.json
+
+#local app settings
+settings.development.js

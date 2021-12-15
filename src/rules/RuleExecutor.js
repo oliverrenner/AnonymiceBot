@@ -1,6 +1,6 @@
 require("../utils/arrays");
-const settings = require("../../settings");
 const config = require("../config");
+const settings = require("../../settings");
 const logger = require("../utils/logger");
 const path = require("path");
 const DiscordBot = require("../discordBot");
@@ -44,22 +44,26 @@ Roles:    ${discordUserCurrentRoles}
       try {
         let role = await guild.roles.fetch(rule.roleId);
 
-        if (!role) {
-          logger.info("Role not found, please make sure to use the correct role id.")
-        } else {
-          await rule.executor.execute(
-              discordUser,
-              role,
-              rule.result
+        //if the configuration has a role id, we expect that should resolve to a discord role
+        //otherwise we will assume the verification rule is custom and will figure out the
+        //roles it needs to deal with internally
+        if (rule.roleId && !role) {
+          logger.info(
+            "Role not found, please make sure to use the correct role id."
           );
-          results.push({
-            name: role.name,
-            roleId: rule.roleId,
-            result: rule.result,
-            //todo: clean this up - only used for ui purposes and name is misleading
-            //removing the role successfully is still success
-            isSuccess: discordUser.roles.cache.has(rule.roleId)
-          });
+          return;
+        }
+
+        let executionResult = await rule.executor.execute(
+          discordUser,
+          role,
+          rule.result
+        );
+
+        if (Array.isArray(executionResult)) {
+          results.push(...executionResult);
+        } else {
+          results.push(executionResult);
         }
       } catch (err) {
         logger.error(err.message);

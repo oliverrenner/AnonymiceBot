@@ -115,8 +115,8 @@ const signMessage = async () => {
       }
 
       var roles = data.status
-        .filter((s) => s.isSuccess === true)
-        .map((s) => s.name)
+        .filter((s) => s.qualified === true)
+        .map((s) => s.role)
         .join(", ");
       if (roles) {
         $(".success-bad").addClass("hidden");

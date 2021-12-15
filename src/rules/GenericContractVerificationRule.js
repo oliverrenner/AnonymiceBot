@@ -14,13 +14,24 @@ class GenericContractVerificationRule {
     this.logger = require("../utils/logger");
   }
 
+  /**
+   * Executes changes to the Discord Users assigned roles using the result from
+   * the check method
+   * 
+   * @param discordUser - The Discord User
+   * @param role - The Discord Role which should be affected
+   * @param result - The result returned from the check method
+   */
   async execute(discordUser, role, result) {
     try {
+
       if (!role) {
         this.logger.info("Role not found, please make sure to use the correct role id.")
         return;
       }
+
       let userQualifiesForRole = result === true;
+      
       if (userQualifiesForRole && !discordUser.roles.cache.has(role.id)) {
         this.logger.info(`Assigning Role: ${role.name}`);
         await discordUser.roles.add(role);
@@ -30,11 +41,24 @@ class GenericContractVerificationRule {
           await discordUser.roles.remove(role);
         }
       }
+
+      return {
+        role: role.name,
+        qualified: userQualifiesForRole,
+        result: result
+      }
+
     } catch (err) {
       this.logger.error(err.message);
     }
   }
 
+  /**
+   * Executes the Contract method specified and returns the result
+   * 
+   * @param user - The User DB record
+   * @returns a result to be consumed in the execute method
+   */
   async check(user) {
     let logMessage = `Generic Contract Executor is executing:
 Contract:       ${this.config.contractAddress}
@@ -47,12 +71,12 @@ Argument(s):    ${user.walletAddress}`;
         this.config.contractAbi,
         provider
       );
-      let result = await contract[this.config.method](user.walletAddress);
-      let count = result.toNumber() > 0;
+      let contractResult = await contract[this.config.method](user.walletAddress);
+      let result = contractResult.toNumber() > 0;
       logMessage += `
-Result:       ${result}`;
+Result:       ${contractResult}`;
       this.logger.info(logMessage);
-      return count;
+      return result;
     } catch (e) {
       this.logger.error(e.message);
       return false;
