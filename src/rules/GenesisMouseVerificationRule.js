@@ -1,14 +1,19 @@
 const logger = require("../utils/logger");
 const getProvider = require("../web3/provider");
-const { Contract, utils } = require("ethers");
+const { Contract } = require("ethers");
 
 class GenesisMouseVerificationRule {
   constructor(config) {
     this.config = config;
+    this.logger = require("../utils/logger");
   }
 
   async execute(discordUser, role, result) {
     try {
+      if (!role) {
+        this.logger.info("Role not found, please make sure to use the correct role id.")
+        return;
+      }
       let userQualifiesForRole =
         result.mice.length > 0 ||
         result.cheethGrinding.length > 0 ||

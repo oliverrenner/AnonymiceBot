@@ -43,20 +43,24 @@ Roles:    ${discordUserCurrentRoles}
     await this.rules.forEachAsync(async (rule) => {
       try {
         let role = await guild.roles.fetch(rule.roleId);
-        await rule.executor.execute(
-          discordUser,
-          role,
-          rule.result
-        );
-        
-        results.push({
-          name: role.name,
-          roleId: rule.roleId,
-          result: rule.result,
-          //todo: clean this up - only used for ui purposes and name is misleading 
-          //removing the role successfully is still success
-          isSuccess: discordUser.roles.cache.has(rule.roleId) 
-        });
+
+        if (!role) {
+          logger.info("Role not found, please make sure to use the correct role id.")
+        } else {
+          await rule.executor.execute(
+              discordUser,
+              role,
+              rule.result
+          );
+          results.push({
+            name: role.name,
+            roleId: rule.roleId,
+            result: rule.result,
+            //todo: clean this up - only used for ui purposes and name is misleading
+            //removing the role successfully is still success
+            isSuccess: discordUser.roles.cache.has(rule.roleId)
+          });
+        }
       } catch (err) {
         logger.error(err.message);
       }

@@ -6,7 +6,7 @@
 ###############################################################################*/
 
 const getProvider = require("../web3/provider");
-const { Contract, utils } = require("ethers");
+const { Contract } = require("ethers");
 
 class GenericContractVerificationRule {
   constructor(config) {
@@ -16,6 +16,10 @@ class GenericContractVerificationRule {
 
   async execute(discordUser, role, result) {
     try {
+      if (!role) {
+        this.logger.info("Role not found, please make sure to use the correct role id.")
+        return;
+      }
       let userQualifiesForRole = result === true;
       if (userQualifiesForRole && !discordUser.roles.cache.has(role.id)) {
         this.logger.info(`Assigning Role: ${role.name}`);

@@ -40,7 +40,7 @@ class VerificationRequestCommandHandler {
     const verificationRequest = {
       userId: interaction.user.id,
       requestId,
-      url: `${baseUrl}/${config.discord.commands.verification.page}?requestId=${requestId}`,
+      url: `${baseUrl}/signin?requestId=${requestId}`,
       ts: new Date().getTime(),
       completed: false,
     };
