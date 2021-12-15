@@ -13,7 +13,7 @@ const settings = {
   rules: [
     {
       name: "Baby Mice",
-      roleId: "917471252518666290",
+      roleId: "918771367074201631",
       executor: {
         type: "GenericContractVerificationRule.js",
         config: {
@@ -25,7 +25,7 @@ const settings = {
     },
     {
       name: "Genesis Mice",
-      roleId: "917471303554957392",
+      roleId: "918771246651572266",
       executor: {
         type: "GenesisMouseVerificationRule.js",
         config: {
