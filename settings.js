@@ -10,7 +10,6 @@ const CheethABI = require("./src/contracts/cheeth_abi.json");
 const AnonymiceBreedingABI = require("./src/contracts/baby_mice_abi.json");
 
 const settings = {
-  endpointUrl: "https://mainnet.infura.io/v3/d6510b4c124e4aea86eb01bce2b31f82",
   rules: [
     {
       name: "Baby Mice",

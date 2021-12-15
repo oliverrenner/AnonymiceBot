@@ -5,12 +5,11 @@
 # © 2021                                                                       #
 ###############################################################################*/
 
-const settings = require("../../settings");
 const config = require("../config");
 const { providers } = require("ethers");
 
 const getProvider = async () => {
-  let url = settings.endpointUrl;
+  let url = config.infura.endpointUrl;
   const infuraProvider = new providers.JsonRpcProvider({
     allowGzip: true,
     url: url,

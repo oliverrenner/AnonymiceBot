@@ -29,6 +29,10 @@ const application = {
     }
 }
 
+const infura = {
+    endpointUrl: process.env.INFURA_ENDPOINT + process.env.INFURA_KEY
+}
+
 const discord = {
     botToken: process.env.DISCORD_BOT_TOKEN,
     clientId: process.env.DISCORD_CLIENT_ID,
@@ -68,4 +72,5 @@ module.exports = {
     signin,
     discord,
     sync,
+    infura
 }
