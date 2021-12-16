@@ -16,76 +16,82 @@ class AnonymiceVerificationRule {
 
   async execute(discordUser, role, result) {
     try {
-
-//  note:   this rule is customized to allow for more than one role assignment so we
-//          can ignore the fact that no specific role has been passed in
-
-      let guild = discordBot.getGuild();
-
+      //  note:   this rule is customized to allow for more than one role assignment so we
+      //          can ignore the fact that no specific role has been passed in
+      
       let executionResults = [];
 
+      let discordRoles = await this.getDiscordRoles(this.config.roles)
+      
+      //genesis mice
+      let genesisMiceRoleConfig = this.config.roles.find(r => r.name === "Genesis Mice");
+      let genesisMiceRole = discordRoles.find(r => r.id === genesisMiceRoleConfig.id);
       let qualifiesForGenesisRole =
         result.mice.length > 0 ||
         result.cheethGrinding.length > 0 ||
         result.breeding.length > 0;
-
       await this.manageRoles(
-        "Genesis Mice", //role name
         discordUser, // discord user
-        guild, //guild instance
+        genesisMiceRole, //guild instance
         qualifiesForGenesisRole
       );
       executionResults.push({
         role: "Genesis Mice",
+        roleId: genesisMiceRole.id,
         qualified: qualifiesForGenesisRole,
         result: {
           mice: result.mice,
           staking: result.cheethGrinding,
-          breeding: result.breeding
+          breeding: result.breeding,
         },
       });
 
-      let qualifiesForBabyRole = result.babies.length > 0;
 
+      //baby mice
+      let babyMiceRoleConfig = this.config.roles.find(r => r.name === "Baby Mice");
+      let babyMiceRole = discordRoles.find(r => r.id === babyMiceRoleConfig.id);
+      let qualifiesForBabyRole = result.babies.length > 0;
       await this.manageRoles(
-        "Baby Mice",
         discordUser,
-        guild,
+        babyMiceRole,
         qualifiesForBabyRole
       );
-
-    
       executionResults.push({
         role: "Baby Mice",
+        roleId: babyMiceRole.id,
         qualified: qualifiesForBabyRole,
         result: result.babies,
       });
 
-      let qualifiesForAlphaMice = qualifiesForGenesisRole || qualifiesForBabyRole;
+
+      //alpha mice 
+      let alphaMiceRoleConfig = this.config.roles.find(r => r.name === "Alpha Mice");
+      let alphaMiceRole = discordRoles.find(r => r.id === alphaMiceRoleConfig.id);
+      let qualifiesForAlphaMice =
+        qualifiesForGenesisRole || qualifiesForBabyRole;
       await this.manageRoles(
-        "Alpha Mice",
         discordUser,
-        guild,
+        alphaMiceRole,
         qualifiesForAlphaMice
       );
 
       executionResults.push({
         role: "Alpha Mice",
+        roleId: alphaMiceRole.id,
         qualified: qualifiesForAlphaMice,
         result: {
-          mice:  {
+          mice: {
             mice: result.mice,
             staking: result.cheethGrinding,
-            breeding: result.breeding
+            breeding: result.breeding,
           },
           babies: {
-            babies: result.babies
-          }   
-        }
+            babies: result.babies,
+          },
+        },
       });
 
       return executionResults;
-
     } catch (err) {
       logger.error(err.message);
     }
@@ -121,6 +127,24 @@ class AnonymiceVerificationRule {
       breeding: breedingMiceResult,
     };
     return result;
+  }
+
+  async getDiscordRoles(rolesConfig) {
+    let guild = discordBot.getGuild();
+    let roles = [];
+    //retrieve each of the discord roles defined in the config
+    await rolesConfig.forEach(async (r) => {
+      let role = await guild.roles.fetch(r.id);
+      if (!role) {
+        this.logger.error(
+          `Could not find the role id configured for ${r.name}. Please confirm your configuration.`
+        );
+        return;
+      }
+      roles.push(role);
+    });
+
+    return roles;
   }
 
   async getGenesisMice(config, user, provider) {
@@ -199,17 +223,8 @@ Result:       ${results}`;
   }
 
   //todo: cleanup return values arent consumed
-  
-  async manageRoles(roleName, discordUser, guild, qualifies) {
-    let roleDefinition = this.config.roles.filter((r) => r.name == roleName);
-    if (!roleDefinition) {
-      this.logger.error(
-        `Could not find the role id configured for ${roleName}. Please confirm your configuration.`
-      );
-      return false;
-    }
-    let roleId = roleDefinition[0].id;
-    let role = await guild.roles.fetch(roleId);
+
+  async manageRoles(discordUser, role, qualifies) {
     if (!role) {
       this.logger.error(
         `Could not locate the ${roleName} discord role using id ${roleId} specified. Please confirm your configuration.`
@@ -218,14 +233,14 @@ Result:       ${results}`;
     }
 
     if (qualifies) {
-      if (!discordUser.roles.cache.has(roleId)) {
-        logger.info(`Assigning Role: ${roleName}`);
+      if (!discordUser.roles.cache.has(role.id)) {
+        logger.info(`Assigning Role: ${role.name}`);
         await discordUser.roles.add(role);
       }
       return true;
     } else {
-      if (discordUser.roles.cache.has(role)) {
-        logger.info(`Removing Role: ${roleName}`);
+      if (discordUser.roles.cache.has(role.id)) {
+        logger.info(`Removing Role: ${role.name}`);
         await discordUser.roles.remove(role);
       }
       return false;

@@ -88,6 +88,7 @@ const exitHandler = (error) => {
 
 const unexpectedErrorHandler = (error) => {
   logger.error(error.message);
+  logger.error(error.stack)
 };
 
 process.on("uncaughtException", unexpectedErrorHandler);

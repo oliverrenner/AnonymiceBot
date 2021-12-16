@@ -1,5 +1,5 @@
 /*##############################################################################
-# File: syncronizer.js                                                         #
+# File: Synchronizer.js                                                         #
 # Project: Anonymice - Discord Bot                                             #
 # Author(s): Oliver Renner (@_orenner) & slingn.eth (@slingncrypto)            #
 # © 2021                                                                       #
@@ -29,7 +29,7 @@ class Synchronizer {
     const logDir = path.join(__dirname, "../log");
     const logger = loggerFactory.create(logDir, "sync.log", "sync");
 
-    logger.info("Starting Syncronizer...");
+    logger.info("Starting Synchronizer...");
 
     const configuredNumberOfMinutes =
       parseInt(config.sync.numberOfMinutes) || 1;
@@ -37,7 +37,7 @@ class Synchronizer {
 
     const firstExecutionTime = new Date(new Date().getTime() + schedule);
     logger.info(
-      `Syncronizer will run every ${configuredNumberOfMinutes} minutes. First execution will start at ${this.toLocaleFormat(
+      `Synchronizer will run every ${configuredNumberOfMinutes} minutes. First execution will start at ${this.toLocaleFormat(
         firstExecutionTime
       )}`
     );
@@ -51,7 +51,7 @@ class Synchronizer {
       syncLog.startTime = now;
 
       logger.info(
-        `Syncronizer iteration starting: ${this.toLocaleFormat(now)}.`
+        `Synchronizer iteration starting: ${this.toLocaleFormat(now)}.`
       );
 
       let cutoff = new Date(new Date().getTime() - schedule);

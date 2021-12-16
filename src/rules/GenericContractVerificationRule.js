@@ -44,6 +44,7 @@ class GenericContractVerificationRule {
 
       return {
         role: role.name,
+        roleId: role.id,
         qualified: userQualifiesForRole,
         result: result
       }

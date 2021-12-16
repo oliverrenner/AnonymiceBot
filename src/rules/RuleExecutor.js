@@ -1,8 +1,13 @@
 require("../utils/arrays");
 const config = require("../config");
-const settings = require("../../settings");
+const fs = require("fs");
+const path = require("path")
+let useDevSettings = false;
+if(config.envName === "development" && fs.existsSync(__dirname, "../../settings.development.js")) {
+  useDevSettings = true;
+}
+const settings = useDevSettings ? require("../../settings.development") : require("../../settings");
 const logger = require("../utils/logger");
-const path = require("path");
 const DiscordBot = require("../discordBot");
 
 class RuleExecutor {
@@ -24,7 +29,7 @@ class RuleExecutor {
       rule.result = await rule.executor.check(user);
     });
 
-    //apply changes to discord user based on the results
+    //retrieve users full list of roles for logging
     const guild = DiscordBot.getGuild(config.discord.guildId);
     const discordUser = await guild.members.fetch(user.userId);
     const discordUserCurrentRoles = [];
