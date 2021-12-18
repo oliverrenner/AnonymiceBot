@@ -15,7 +15,7 @@ const mongoSanitize = require("express-mongo-sanitize");
 const signinPageController = require("./controllers/signinPageController");
 const signinApiController = require("./controllers/signinApiController");
 const statsApiController = require("./controllers/statsApiController");
-const { logger } = require("ethers");
+const logger = require("./utils/logger");
 
 /*##############################################################################
 express configuration

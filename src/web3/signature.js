@@ -1,6 +1,5 @@
-const logger = require("../utils/logger");
 const getProvider = require("./provider");
-const { utils } = require("ethers");
+const { utils, Contract } = require("ethers");
 
 const verifySignature = async (message) => {
   const infuraProvider = await getProvider(message);
