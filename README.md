@@ -16,8 +16,6 @@ ______ _                       _  ______       _
 |___/ |_|___/\___\___/|_|  \__,_| \____/ \___/ \__| 
 ```
 
-# Anonymice - Discord Bot
-
 ## About the Project
 
 The Anonymice discord bot is an open source alternative to collab.land - enabling verification of ownership of digital assets on the Ethereum blockchain to automatically manage the assigment of roles on a Discord server.
@@ -47,6 +45,3 @@ TBD
 Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
-[contributors-shield]: https://img.shields.io/github/contributors/github_username/repo_name.svg?style=for-the-badge
-[contributors-url]: https://github.com/oliverrenner/AnonymiceDiscordBot/graphs/contributors

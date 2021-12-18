@@ -3,10 +3,10 @@ const config = require("../config");
 const fs = require("fs");
 const path = require("path")
 let useDevSettings = false;
-if(config.envName === "development" && fs.existsSync(__dirname, "../../settings.development.js")) {
+if(config.envName === "development" && fs.existsSync(path.join(__dirname, "../config/settings.development.js"))) {
   useDevSettings = true;
 }
-const settings = useDevSettings ? require("../../settings.development") : require("../../settings");
+const settings = useDevSettings ? require("../config/settings.development") : require("../config/settings");
 const User = require("../db/models/user");
 const VerificationRequest = require("../db/models/verificationRequest");
 

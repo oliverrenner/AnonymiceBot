@@ -5,9 +5,9 @@
 # © 2021                                                                       #
 ###############################################################################*/
 
-const AnonymiceABI = require("./src/contracts/mice_abi.json");
-const CheethABI = require("./src/contracts/cheeth_abi.json");
-const AnonymiceBreedingABI = require("./src/contracts/baby_mice_abi.json");
+const AnonymiceABI = require("../contracts/mice_abi.json");
+const CheethABI = require("../contracts/cheeth_abi.json");
+const AnonymiceBreedingABI = require("../contracts/baby_mice_abi.json");
 
 const settings = {
   rules: [
