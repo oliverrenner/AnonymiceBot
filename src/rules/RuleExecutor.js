@@ -1,12 +1,17 @@
 require("../utils/arrays");
 const config = require("../config");
 const fs = require("fs");
-const path = require("path")
+const path = require("path");
 let useDevSettings = false;
-if(config.envName === "development" && fs.existsSync(path.join(__dirname, "../config/settings.development.js"))) {
+if (
+  config.envName === "development" &&
+  fs.existsSync(path.join(__dirname, "../config/settings.development.js"))
+) {
   useDevSettings = true;
 }
-const settings = useDevSettings ? require("../config/settings.development") : require("../config/settings");
+const settings = useDevSettings
+  ? require("../config/settings.development")
+  : require("../config/settings");
 const logger = require("../utils/logger");
 const DiscordBot = require("../discordBot");
 
@@ -25,13 +30,23 @@ class RuleExecutor {
   }
 
   async run(user) {
+    if (!user || !user.userId)
+      throw Error(
+        `RuleExecutor.run requires a user with a userId, received: ${user}`
+      );
+
+    // retrieve the discord user
+    const guild = DiscordBot.getGuild(config.discord.guildId);
+    const discordUser = await guild.members.fetch(user.userId);
+
+    if(!discordUser || !discordUser.roles)
+        throw Error(`RuleExecutor.run could not fetch the specific`)
+
     await this.rules.forEachAsync(async (rule) => {
       rule.result = await rule.executor.check(user);
     });
 
     //retrieve users full list of roles for logging
-    const guild = DiscordBot.getGuild(config.discord.guildId);
-    const discordUser = await guild.members.fetch(user.userId);
     const discordUserCurrentRoles = [];
     discordUser.roles.cache.forEach((r) => {
       discordUserCurrentRoles.push(r.name);

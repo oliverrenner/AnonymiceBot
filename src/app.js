@@ -15,6 +15,7 @@ const mongoSanitize = require("express-mongo-sanitize");
 const signinPageController = require("./controllers/signinPageController");
 const signinApiController = require("./controllers/signinApiController");
 const statsApiController = require("./controllers/statsApiController");
+const syncApiController = require("./controllers/syncApiController");
 const logger = require("./utils/logger");
 
 /*##############################################################################
@@ -60,6 +61,14 @@ app.get("/signin", async function (req, res) {
 app.post("/api/signin", async (req, res) => {
   signinApiController.post(req, res);
 });
+
+/*##############################################################################
+express routes - sync/user
+##############################################################################*/
+app.get("/api/sync", async(req, res) => {
+  syncApiController.syncUser(req, res);
+})
+
 
 /*##############################################################################
 express routes - stats/utilities

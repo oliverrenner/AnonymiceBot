@@ -86,7 +86,7 @@ class Synchronizer {
 
         let status = await ruleExecutor.run(user);
         user.status = status;
-        user.lastVerified = now;
+        user.lastVerified = now.getTime();
         user.save();
 
       });
