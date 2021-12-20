@@ -67,23 +67,31 @@ class SignInApiController {
     user.status = status;
     user.save();
 
-    //in case there are any other users tied to the wallet used to sign in
-    //remove them
-
-    let usersByWallet = await User.find({ walletAddress: { '$regex': message.address, '$options': 'i' }}).exec();
-    usersByWallet.forEach(u => {
-      if(u.id !== user.id) {
-        logger.info(`Deleting User using DB id:${u.id} found tied to the same wallet as ${user.id}`);
+    //look for other Users which have the same wallet assigned as the signer
+    //any users found should have their role removed and their User records removed
+    let usersByWallet = await User.find({
+      walletAddress: { $regex: message.address, $options: "i" },
+    }).exec();
+    await usersByWallet.forEachAsync(async (u) => {
+      if (u.id !== user.id) {
+        //set wallet to invalid/unknown and run verification to eliminate the users roles
+        user.walletAddress = null;
+        await ruleExecutor.run(user);
+        logger.info(
+          `Deleting User using DB id:${u.id} found tied to the same wallet as ${user.id}`
+        );
         User.deleteOne(u);
       }
     });
 
-    //in case there are any other wallets associated with the discord user
-    //remove them
-    let usersByDiscord = await User.find({ userId: user.userId}).exec();
-    usersByDiscord.forEach(u => {
-      if(u.id !== user.id) {
-        logger.info(`Deleting User using DB id:${u.id} which appears to be tied to the same discord user who has signed in ${user.userId}`);
+    //look for any other User records for the same discord user
+    //any found should be removed
+    let usersByDiscord = await User.find({ userId: user.userId }).exec();
+    await usersByDiscord.forEachAsync(async (u) => {
+      if (u.id !== user.id) {
+        logger.info(
+          `Deleting User using DB id:${u.id} which appears to be tied to the same discord user who has signed in ${user.userId}`
+        );
         User.deleteOne(u).exec();
       }
     });
@@ -98,7 +106,9 @@ class SignInApiController {
   }
 
   async getUser(walletAddress) {
-    const user = await User.findOne({ walletAddress: { '$regex': walletAddress, '$options': 'i' } }).exec();
+    const user = await User.findOne({
+      walletAddress: { $regex: walletAddress, $options: "i" },
+    }).exec();
     return user || new User();
   }
 

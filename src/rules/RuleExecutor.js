@@ -37,7 +37,7 @@ class RuleExecutor {
 
     // retrieve the discord user
     const guild = DiscordBot.getGuild(config.discord.guildId);
-    const discordUser = await guild.members.fetch(user.userId);
+    const discordUser = await guild.members.fetch(user.userId, {force: true});
 
     if(!discordUser || !discordUser.roles)
         throw Error(`RuleExecutor.run could not fetch the specific`)
@@ -62,7 +62,7 @@ Roles:    ${discordUserCurrentRoles}
     let results = [];
     await this.rules.forEachAsync(async (rule) => {
       try {
-        let role = await guild.roles.fetch(rule.roleId);
+        let role = await guild.roles.fetch(rule.roleId, {force: true});
 
         //if the configuration has a role id, we expect that should resolve to a discord role
         //otherwise we will assume the verification rule is custom and will figure out the
@@ -87,6 +87,7 @@ Roles:    ${discordUserCurrentRoles}
         }
       } catch (err) {
         logger.error(err.message);
+        logger.error(err.stack);
       }
     });
 

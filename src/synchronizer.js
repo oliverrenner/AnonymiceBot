@@ -78,7 +78,7 @@ class Synchronizer {
         );  
       }
       dbUsers.forEach(async (user) => {
-        const discordUser = await guild.members.fetch(user.userId);
+        const discordUser = await guild.members.fetch(user.userId, {force: true});
 
         logger.info(
           `Reverifying user: ${discordUser.displayName} (${discordUser.nickname}) using wallet ${user.walletAddress}`

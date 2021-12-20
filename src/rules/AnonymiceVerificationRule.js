@@ -15,18 +15,29 @@ class AnonymiceVerificationRule {
   }
 
   async execute(discordUser, role, result) {
-    try {
-      //  note:   this rule is customized to allow for more than one role assignment so we
-      //          can ignore the fact that no specific role has been passed in
-      
-      let executionResults = [];
+    //  note:   this rule is customized to allow for more than one role assignment so we
+    //          can ignore the fact that no specific role has been passed in
 
-      let discordRoles = await this.getDiscordRoles(this.config.roles)
-      
+    let executionResults = [];
+
+    let discordRoles = await this.getDiscordRoles(this.config.roles);
+
+    //wrapping each role we are executing on in its own try/catch
+    //if any one fails, others will still be processed
+
+    let qualifiesForGenesisRole = false,
+      qualifiesForBabyRole = false;
+
+    //execute - genesis mice
+    try {
       //genesis mice
-      let genesisMiceRoleConfig = this.config.roles.find(r => r.name === "Genesis Mice");
-      let genesisMiceRole = discordRoles.find(r => r.id === genesisMiceRoleConfig.id);
-      let qualifiesForGenesisRole =
+      let genesisMiceRoleConfig = this.config.roles.find(
+        (r) => r.name === "Genesis Mice"
+      );
+      let genesisMiceRole = discordRoles.find(
+        (r) => r.id === genesisMiceRoleConfig.id
+      );
+      qualifiesForGenesisRole =
         result.mice.length > 0 ||
         result.cheethGrinding.length > 0 ||
         result.breeding.length > 0;
@@ -45,35 +56,43 @@ class AnonymiceVerificationRule {
           breeding: result.breeding,
         },
       });
+    } catch (err) {
+      logger.error(err.message);
+      logger.error(err.stack);
+    }
 
-
-      //baby mice
-      let babyMiceRoleConfig = this.config.roles.find(r => r.name === "Baby Mice");
-      let babyMiceRole = discordRoles.find(r => r.id === babyMiceRoleConfig.id);
-      let qualifiesForBabyRole = result.babies.length > 0;
-      await this.manageRoles(
-        discordUser,
-        babyMiceRole,
-        qualifiesForBabyRole
+    //execute - baby mice
+    try {
+      let babyMiceRoleConfig = this.config.roles.find(
+        (r) => r.name === "Baby Mice"
       );
+      let babyMiceRole = discordRoles.find(
+        (r) => r.id === babyMiceRoleConfig.id
+      );
+      qualifiesForBabyRole = result.babies.length > 0;
+      await this.manageRoles(discordUser, babyMiceRole, qualifiesForBabyRole);
       executionResults.push({
         role: "Baby Mice",
         roleId: babyMiceRole.id,
         qualified: qualifiesForBabyRole,
         result: result.babies,
       });
+    } catch (err) {
+      logger.error(err.message);
+      logger.error(err.stack);
+    }
 
-
-      //alpha mice 
-      let alphaMiceRoleConfig = this.config.roles.find(r => r.name === "Alpha Mice");
-      let alphaMiceRole = discordRoles.find(r => r.id === alphaMiceRoleConfig.id);
+    //execute - alpha mice
+    try {
+      let alphaMiceRoleConfig = this.config.roles.find(
+        (r) => r.name === "Alpha Mice"
+      );
+      let alphaMiceRole = discordRoles.find(
+        (r) => r.id === alphaMiceRoleConfig.id
+      );
       let qualifiesForAlphaMice =
         qualifiesForGenesisRole || qualifiesForBabyRole;
-      await this.manageRoles(
-        discordUser,
-        alphaMiceRole,
-        qualifiesForAlphaMice
-      );
+      await this.manageRoles(discordUser, alphaMiceRole, qualifiesForAlphaMice);
 
       executionResults.push({
         role: "Alpha Mice",
@@ -90,11 +109,12 @@ class AnonymiceVerificationRule {
           },
         },
       });
-
-      return executionResults;
     } catch (err) {
       logger.error(err.message);
+      logger.error(err.stack);
     }
+
+    return executionResults;
   }
 
   async check(user) {
@@ -133,10 +153,10 @@ class AnonymiceVerificationRule {
     let guild = discordBot.getGuild();
     let roles = [];
     //retrieve each of the discord roles defined in the config
-    await rolesConfig.forEach(async (r) => {
-      let role = await guild.roles.fetch(r.id);
+    await rolesConfig.forEachAsync(async (r) => {
+      let role = await guild.roles.fetch(r.id, { force: true });
       if (!role) {
-        this.logger.error(
+        logger.error(
           `Could not find the role id configured for ${r.name}. Please confirm your configuration.`
         );
         return;
@@ -151,6 +171,13 @@ class AnonymiceVerificationRule {
     let logMessage = `Anonymice Verification Rule is executing - Get Genesis Mice:
 Contract:       ${config.Address}
 Argument(s):    ${user.walletAddress}`;
+
+    if (!user.walletAddress) {
+      logMessage += `
+Wallet Address is null/empty. Skipping check against contract and returning 0.`;
+      logger.info(logMessage);
+      return 0;
+    }
 
     const contract = new Contract(config.Address, config.ABI, provider);
 
@@ -168,6 +195,13 @@ Result:       ${result}`;
 Contract:       ${config.Address}
 Argument(s):    ${user.walletAddress}`;
 
+    if (!user.walletAddress) {
+      logMessage += `
+Wallet Address is null/empty. Skipping check against contract and returning 0.`;
+      logger.info(logMessage);
+      return 0;
+    }
+
     const contract = new Contract(config.Address, config.ABI, provider);
 
     const result = await contract.balanceOf(user.walletAddress);
@@ -184,6 +218,13 @@ Result:       ${result}`;
 Contract:       ${config.Address}
 Argument(s):    ${user.walletAddress}`;
 
+    if (!user.walletAddress) {
+      logMessage += `
+Wallet Address is null/empty. Skipping check against contract and returning [].`;
+      logger.info(logMessage);
+      return [];
+    }
+
     const contract = new Contract(config.Address, config.ABI, provider);
 
     const result = await contract.getTokensStaked(user.walletAddress);
@@ -198,6 +239,13 @@ Result:       ${result}`;
     let logMessage = `Anonymice Verification Rule is executing - Get Breeding Mice:
 Contract:       ${config.Address}
 Argument(s):    ${user.walletAddress}`;
+
+    if (!user.walletAddress) {
+      logMessage += `
+Wallet Address is null/empty. Skipping check against contract and returning [].`;
+      logger.info(logMessage);
+      return [];
+    }
 
     const contract = new Contract(config.Address, config.ABI, provider);
 
@@ -226,24 +274,29 @@ Result:       ${results}`;
 
   async manageRoles(discordUser, role, qualifies) {
     if (!role) {
-      this.logger.error(
+      logger.error(
         `Could not locate the ${roleName} discord role using id ${roleId} specified. Please confirm your configuration.`
       );
       return false;
     }
 
-    if (qualifies) {
-      if (!discordUser.roles.cache.has(role.id)) {
-        logger.info(`Assigning Role: ${role.name}`);
-        await discordUser.roles.add(role);
+    try {
+      if (qualifies) {
+        if (!discordUser.roles.cache.has(role.id)) {
+          logger.info(`Assigning Role: ${role.name}`);
+          await discordUser.roles.add(role);
+        }
+        return true;
+      } else {
+        if (discordUser.roles.cache.has(role.id)) {
+          logger.info(`Removing Role: ${role.name}`);
+          await discordUser.roles.remove(role);
+        }
+        return false;
       }
-      return true;
-    } else {
-      if (discordUser.roles.cache.has(role.id)) {
-        logger.info(`Removing Role: ${role.name}`);
-        await discordUser.roles.remove(role);
-      }
-      return false;
+    } catch (err) {
+      logger.error(err.message);
+      logger.error(err.stack)
     }
   }
 }
