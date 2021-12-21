@@ -92,6 +92,7 @@ Roles:    ${discordUserCurrentRoles}
     });
 
     let discordUserFinalRoles = [];
+    discordUser.fetch(true); //force refresh of discord user roles
     discordUser.roles.cache.forEach((r) => {
       discordUserFinalRoles.push(r.name);
     });
