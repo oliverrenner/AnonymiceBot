@@ -80,7 +80,7 @@ class SignInApiController {
         logger.info(
           `Deleting User using DB id:${u.id} found tied to the same wallet as ${user.id}`
         );
-        User.deleteOne(u);
+        await u.deleteOne();
       }
     });
 
@@ -92,7 +92,7 @@ class SignInApiController {
         logger.info(
           `Deleting User using DB id:${u.id} which appears to be tied to the same discord user who has signed in ${user.userId}`
         );
-        User.deleteOne(u).exec();
+        await u.deleteOne();
       }
     });
 
