@@ -54,9 +54,12 @@ mongoose.connect(config.mongodb.url, config.mongoose.options)
   //todo: migrate to another node hosting script
   //start the daily role verification sync process
   await Synchronizer.start();
+  if(config.sync.syncOnStartup && config.sync.syncOnStartup === "true"){
+    logger.info(`Synchronize on startup as been enabled, executing first synchronization cycle immediately...`)
+    await Synchronizer.execute();
+  }
 })
 .catch(error => {
-  logger.error(`Could not connect to the MongoDB instance. Please verify your configuration settings.`);
   exitHandler(error)
 });
 
@@ -80,6 +83,7 @@ const exitHandler = (error) => {
   stopServices(true);
   if(error) {
     logger.error(error.message);
+    logger.error(error.stack);
     process.exit(-1);
   }
   process.exit(0);

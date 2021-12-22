@@ -2,6 +2,7 @@ const logger = require("../utils/logger");
 const User = require("../db/models/user");
 const ruleExecutor = require("../rules/RuleExecutor");
 const RequestError = require("../utils/RequestError");
+const userCleanupService = require("../services/userCleanupService");
 
 
 class SyncApiController {
@@ -35,6 +36,8 @@ class SyncApiController {
     user.status = status;
     user.lastVerified = new Date().getTime();
     user.save();
+
+    await userCleanupService.cleanup(user, ruleExecutor, logger);
 
     res
       .status(200)

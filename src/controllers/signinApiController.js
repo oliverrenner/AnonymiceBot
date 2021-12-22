@@ -12,6 +12,7 @@ const verificationRequestValidator = require("../validators/VerificationRequestV
 const VerificationRequest = require("../db/models/verificationRequest");
 const User = require("../db/models/user");
 const ruleExecutor = require("../rules/RuleExecutor");
+const userCleanupService = require("../services/userCleanupService");
 
 class SignInApiController {
   //processes requests for sign in using web 3
@@ -50,51 +51,28 @@ class SignInApiController {
     //verify the users signature
     await this.verifySignature(message);
 
-    //retrive the first user found tied to the wallet address of signer
-    //or a new user record if none exists
+    //retrive the first user db record found tied to the wallet address 
+    //of the signer or a new user record if none exists
     const user = await this.getUser(message.address);
+    //assign the user record the discord user id from the verification record
     user.userId = verificationRequestRecord.userId;
+    //assign the user record the wallet address used in signing
     user.walletAddress = message.address;
     user.lastVerified = verificationRequestRecord.ts;
 
-    //run each of the rules specified from settings.js
+    //execute the configured verification rules
     const status = await ruleExecutor.run(user);
 
     //mark verification request complete
     verificationRequestRecord.completed = true;
     verificationRequestRecord.save();
 
+    //assign the user record the status result from the verification process
     user.status = status;
     user.save();
 
-    //look for other Users which have the same wallet assigned as the signer
-    //any users found should have their role removed and their User records removed
-    let usersByWallet = await User.find({
-      walletAddress: { $regex: message.address, $options: "i" },
-    }).exec();
-    await usersByWallet.forEachAsync(async (u) => {
-      if (u.id !== user.id) {
-        //set wallet to invalid/unknown and run verification to eliminate the users roles
-        user.walletAddress = null;
-        await ruleExecutor.run(user);
-        logger.info(
-          `Deleting User using DB id:${u.id} found tied to the same wallet as ${user.id}`
-        );
-        await u.deleteOne();
-      }
-    });
-
-    //look for any other User records for the same discord user
-    //any found should be removed
-    let usersByDiscord = await User.find({ userId: user.userId }).exec();
-    await usersByDiscord.forEachAsync(async (u) => {
-      if (u.id !== user.id) {
-        logger.info(
-          `Deleting User using DB id:${u.id} which appears to be tied to the same discord user who has signed in ${user.userId}`
-        );
-        await u.deleteOne();
-      }
-    });
+    //clean the user database - see the cleanup method for more details
+    await userCleanupService.cleanup(user, ruleExecutor, logger);
 
     // return something to frontend .. we're done here
     res

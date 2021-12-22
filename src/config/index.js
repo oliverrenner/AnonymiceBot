@@ -40,7 +40,8 @@ const discord = {
 }
 
 const sync = {
-    numberOfMinutes: process.env.SYNC_INTERVAL_IN_MINUTES
+    numberOfMinutes: process.env.SYNC_INTERVAL_IN_MINUTES,
+    syncOnStartup: process.env.SYNC_ON_STARTUP
 }
 
 const mongodb = {

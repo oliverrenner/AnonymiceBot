@@ -15,11 +15,15 @@ const User = require("./db/models/user");
 
 const ruleExecutor = require("./rules/RuleExecutor");
 const DiscordBot = require("./discordBot");
+const userCleanupService = require("./services/userCleanupService");
 /**
  * Synchronizes the roles assigned to users ever N minutes as defined in the
  * SYNC_INTERVAL_IN_MINUTES .env variable
  */
 class Synchronizer {
+
+
+
   /**
    * Starts a scheduled task which will refresh/synchronize user roles against
    * the verified users wallet/holdings every N minutes as defined in the
@@ -27,7 +31,8 @@ class Synchronizer {
    */
   start() {
     const logDir = path.join(__dirname, "../log");
-    const logger = loggerFactory.create(logDir, "sync.log", "sync");
+    let logger = loggerFactory.create(logDir, "sync.log", "sync");
+    this.logger = logger;
 
     logger.info("Starting Synchronizer...");
 
@@ -46,54 +51,71 @@ class Synchronizer {
 
     this.interval = setInterval(async () => {
     // this.interval = async () => {
-      const syncLog = new SyncLog();
-      let now = new Date();
-      syncLog.startTime = now;
-
-      logger.info(
-        `Synchronizer iteration starting: ${this.toLocaleFormat(now)}.`
-      );
-
-      let cutoff = new Date(new Date().getTime() - schedule);
-      logger.info(
-        `Searching for users who have not reverified since ${this.toLocaleFormat(
-          cutoff
-        )}`
-      );
-
-      const guild = DiscordBot.getGuild();
-
-      //retrieve the users from the db whos last verification is older than the cutoff
-      const dbUsers = await User.find({
-        lastVerified: { $lte: cutoff },
-      })
-      .sort([[ 'lastVerified', 'ascending' ]])
-      .exec();
-
-      if(!dbUsers.length > 0) {
-        logger.info(
-          `No users require re-verification at this time ${this.toLocaleFormat(
-            cutoff
-          )}`
-        );  
-      }
-      dbUsers.forEach(async (user) => {
-        const discordUser = await guild.members.fetch(user.userId, {force: true});
-
-        logger.info(
-          `Reverifying user: ${discordUser.displayName} (${discordUser.nickname}) using wallet ${user.walletAddress}`
-        );
-
-        let status = await ruleExecutor.run(user);
-        user.status = status;
-        user.lastVerified = now.getTime();
-        user.save();
-
-      });
-      syncLog.save();
+      await this.execute();
     }, schedule);
     
     //}; this.interval();
+  }
+
+  async execute() {
+    let logger = this.logger;
+    
+    if(this.isExecuting) {
+      logger.info(`Sync interval has attempted to start execution of a cycle while the previous cycle is still running.`)
+      logger.info(`Skipping sync cycle at ${new Date().toLocaleString()}`)
+    }
+
+    this.isExecuting = true;
+    const syncLog = new SyncLog();
+    let now = new Date();
+    syncLog.startTime = now;
+
+    logger.info(
+      `Synchronizer execution cycle starting: ${this.toLocaleFormat(now)}.`
+    );
+    
+
+    let cutoff = new Date(new Date().getTime());
+    logger.info(
+      `Searching for users who have not reverified since ${this.toLocaleFormat(
+        cutoff
+      )}`
+    );
+
+    const guild = DiscordBot.getGuild();
+
+    //retrieve the users from the db whos last verification is older than the cutoff
+    const dbUsers = await User.find({
+      lastVerified: { $lte: cutoff },
+    })
+    .sort([[ 'lastVerified', 'descending' ]])
+    .exec();
+
+    if(!dbUsers.length > 0) {
+      logger.info(
+        `No users require re-verification at this time ${this.toLocaleFormat(
+          cutoff
+        )}`
+      );  
+    }
+    await dbUsers.forEachAsync(async (user) => {
+      const discordUser = await guild.members.fetch(user.userId, {force: true});
+
+      logger.info(
+        `Reverifying user: ${discordUser.displayName} (${discordUser.nickname}) using wallet ${user.walletAddress}`
+      );
+
+      let status = await ruleExecutor.run(user);
+      user.status = status;
+      user.lastVerified = now.getTime();
+      user.save();
+
+      await userCleanupService.cleanup(user, ruleExecutor, logger);
+
+
+    });
+    syncLog.save();
+    this.isExecuting = false;
   }
 
   /**
