@@ -39,6 +39,20 @@ function displayAddress(address, cb) {
 /* app */
 const init = async () => {
   window.provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+  window.provider.on("network", (newNetwork, oldNetwork) => {
+    if(oldNetwork) {
+      window.location.reload();
+    }
+  });
+  ethereum.on('accountsChanged', function (accounts) {
+    if(accounts && accounts.length > 0) {
+      if(window.account != accounts[0]) {
+        window.location.reload();
+      }
+    }
+    
+  });
+
   window.signer = provider.getSigner();
   await provider.send("eth_requestAccounts", []);
   let address = await signer.getAddress();

@@ -40,10 +40,10 @@ class RuleExecutor {
     const discordUser = await guild.members.fetch(user.userId, {force: true});
 
     if(!discordUser || !discordUser.roles)
-        throw Error(`RuleExecutor.run could not fetch the specific`)
+        throw Error(`RuleExecutor.run did not find a Discord user specified by ${user}`)
 
     await this.rules.forEachAsync(async (rule) => {
-      rule.result = await rule.executor.check(user);
+        rule.result = await rule.executor.check(user);
     });
 
     //retrieve users full list of roles for logging

@@ -106,13 +106,17 @@ class Synchronizer {
       );
 
       let status = await ruleExecutor.run(user);
-      user.status = status;
-      user.lastVerified = now.getTime();
-      user.save();
-
-      await userCleanupService.cleanup(user, ruleExecutor, logger);
-
-
+      if(!status || status.length <= 0) {
+        logger.error(`Rule execution returned an empty result. Not updating the users status/last verified date. Will reattempt verification of this user on the next cyle: ${user.walletAddress}`)
+      }
+      else {
+        user.status = status;
+        user.lastVerified = now.getTime();
+        user.save();
+  
+        await userCleanupService.cleanup(user, ruleExecutor, logger);  
+      }
+      
     });
     syncLog.save();
     this.isExecuting = false;

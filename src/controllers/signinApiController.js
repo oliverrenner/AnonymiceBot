@@ -68,11 +68,16 @@ class SignInApiController {
     verificationRequestRecord.save();
 
     //assign the user record the status result from the verification process
-    user.status = status;
-    user.save();
-
-    //clean the user database - see the cleanup method for more details
-    await userCleanupService.cleanup(user, ruleExecutor, logger);
+    if(!status || status.length <= 0) {
+      this.logger.error(`Rule execution returned an empty result. User will not be saved and must initiate another verification request. ${user}`);
+    }
+    else {
+      user.status = status;
+      user.save();
+  
+      //clean the user database - see the cleanup method for more details
+      await userCleanupService.cleanup(user, ruleExecutor, logger);
+    }
 
     // return something to frontend .. we're done here
     res
