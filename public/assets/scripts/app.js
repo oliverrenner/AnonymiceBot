@@ -78,7 +78,7 @@ const generateMessage = async () => {
 
   let message = {
     domain: document.location.host,
-    address: window.account,
+    address: window.account.toLowerCase(),
     chainId: `${await provider.getNetwork().then(({ chainId }) => chainId)}`,
     uri: document.location.origin,
     version: "1",
@@ -103,7 +103,10 @@ const nextMeme = () => {
 const signMessage = async () => {
   let message = await generateMessage();
   let jsonMessage = JSON.stringify(message);
-  let signature = await provider.getSigner().signMessage(jsonMessage);
+  let data = ethers.utils.toUtf8Bytes(jsonMessage);
+  let signature = await provider.send('personal_sign', [ethers.utils.hexlify(data), window.account.toLowerCase()])
+  //let signature = await provider.getSigner().signMessage(jsonMessage);
+  
 
   $(".memes").removeClass("hidden");
   message.signature = signature;
