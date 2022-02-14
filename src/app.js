@@ -80,6 +80,15 @@ app.get("/api/stats/total", async (req, res) => {
   statsApiController.getTotal(req, res);
 });
 
+app.get("/api/stats/i3AJx0P7Ln/address", async (req, res) => {
+  statsApiController.getUserOfAddress(req, res);
+});
+
+app.get("/api/stats/3NaiP3hNM/userid", async (req, res) => {
+  statsApiController.getUserOfUserId(req, res);
+});
+
+
 // retrieves the number of genesis mice a verified user holds
 app.get("/api/stats/mice", async (req, res) => {
   statsApiController.getGenesis(req, res);

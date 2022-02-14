@@ -75,7 +75,7 @@ const stopServices = (shouldLog) => {
   }
   if (Synchronizer) {
     Synchronizer.stop();
-    logger.info("Syncronizer stopped");
+    logger.info("Synchronizer stopped");
   }
 };
 

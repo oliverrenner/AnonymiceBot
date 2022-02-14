@@ -12,6 +12,7 @@ const getProvider = async () => {
   let url = config.infura.endpointUrl;
   const infuraProvider = new providers.JsonRpcProvider({
     allowGzip: true,
+    timeout: 10000,
     url: url,
     headers: {
       Accept: "*/*",

@@ -37,13 +37,17 @@ class RuleExecutor {
 
     // retrieve the discord user
     const guild = DiscordBot.getGuild(config.discord.guildId);
-    const discordUser = await guild.members.fetch(user.userId, {force: true});
+    const discordUser = await guild.members
+      .fetch(user.userId, { force: true })
+      .catch((e) => null);
 
-    if(!discordUser || !discordUser.roles)
-        throw Error(`RuleExecutor.run did not find a Discord user specified by ${user}`)
+    if (!discordUser || !discordUser.roles)
+      throw Error(
+        `RuleExecutor.run did not find a Discord user specified by ${user}`
+      );
 
     await this.rules.forEachAsync(async (rule) => {
-        rule.result = await rule.executor.check(user);
+      rule.result = await rule.executor.check(user);
     });
 
     //retrieve users full list of roles for logging
@@ -53,7 +57,7 @@ class RuleExecutor {
     });
 
     let logMessage = `Synchronizing roles for user: 
-Discord:  ${discordUser.displayName} (${discordUser.nickname}) 
+Discord:  ${discordUser.displayName}
 Wallet:   ${user.walletAddress}
 Roles:    ${discordUserCurrentRoles}
 -------------------------------------------------------------------------------`;
@@ -62,7 +66,7 @@ Roles:    ${discordUserCurrentRoles}
     let results = [];
     await this.rules.forEachAsync(async (rule) => {
       try {
-        let role = await guild.roles.fetch(rule.roleId, {force: true});
+        let role = await guild.roles.fetch(rule.roleId, { force: true });
 
         //if the configuration has a role id, we expect that should resolve to a discord role
         //otherwise we will assume the verification rule is custom and will figure out the
